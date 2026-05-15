@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora's World | 个人网站</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body id="top">
+    <!-- 在body开始处添加主题切换按钮 -->
+    <div id="theme-toggle" class="theme-toggle" title="切换主题">
+      <i class="fas fa-moon"></i>
+      <i class="fas fa-sun" style="display: none;"></i>
+    </div>
+    <!-- 星空背景容器 -->
+    <div id="stars-container"></div>
+    
+    <!-- 主容器 -->
+    <main class="container">
+        <!-- 左侧个人信息区 -->
+        <section class="profile-section">
+            <div class="profile-card">
+                <!-- 头像区域 -->
+                <div class="avatar-container">
+                    <div class="avatar-frame">
+                        <img src="assets/images/avatar.jpg" alt="Aurora的头像" class="avatar">
+                        <div class="avatar-glow"></div>
+                    </div>
+                </div>
+                
+                <!-- 昵称和标题 -->
+                <div class="profile-info">
+                    <h1 class="nickname" id="typewriter">Aurora</h1>
+                    <h2 class="title">Welcome to Aurora's World</h2>
+                    <p class="subtitle">数据分析 | Web开发 | 持续学习者</p>
+                </div>
+                
+                <!-- 社交链接 -->
+                <div class="social-links">
+                    <a href="https://github.com/huxiaoman01" target="_blank" class="social-link github" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link wechat" id="wechat-btn" title="微信">
+                        <i class="fab fa-weixin"></i>
+                    </a>
+                    <a href="mailto:2151235296@qq.com" class="social-link email" title="邮箱">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="https://www.xiaohongshu.com/user/profile/620ca19c000000001000c8bc" target="_blank" class="social-link xiaohongshu" title="小红书">
+                        <i class="fas fa-camera"></i>
+                    </a>
+                </div>
+                
+                <!-- 简短介绍 -->
+                <div class="short-bio">
+                    <p>信息管理专业大二学生</p>
+                    <p>热爱数据、代码与理性思考</p>
+                    <p>在专注与探索中持续成长</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 右侧内容区 -->
+        <section class="content-section">
+            <div class="content-card">
+                <!-- 关于我 -->
+                <section class="about-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-user-astronaut"></i> 关于我
+                    </h3>
+                    <div class="about-content">
+                        <p>我是一名就读于信息管理专业的大二学生，偏向安静内敛，做事认真细致，习惯理性思考与踏实前行。热爱数据与代码，深耕数据分析与 web 相关学习，积极参与科创竞赛与实践探索，在不断尝试中沉淀成长。</p>
+                        <p>一面专注学业与未来规划，一面热爱生活、喜欢奔赴山海，在理性的专业之外，保留温柔的浪漫与热爱。慢慢进步，持续发光，认真奔赴属于自己的前路。</p>
+                    </div>
+                </section>
+                
+                <!-- 技能标签 -->
+                <section class="skills-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-rocket"></i> 技能与兴趣
+                    </h3>
+                    <div class="skills-container">
+                        <span class="skill-tag">Python数据分析</span>
+                        <span class="skill-tag">Web前端开发</span>
+                        <span class="skill-tag">数据库管理</span>
+                        <span class="skill-tag">信息检索</span>
+                        <span class="skill-tag">项目管理</span>
+                        <span class="skill-tag">数据可视化</span>
+                        <span class="skill-tag">HTML/CSS/JS</span>
+                        <span class="skill-tag">团队协作</span>
+                    </div>
+                </section>
+
+                <!-- 我的项目：列表数据来自 FastAPI GET /api/projects -->
+                <section class="projects-section" id="projects">
+                    <h3 class="section-title">
+                        <i class="fas fa-code-branch"></i> 我的项目
+                    </h3>
+                    <p class="projects-api-note">以下卡片由后端接口加载；本地需同时运行前端（如端口 5500）与 API（端口 8000）。</p>
+                    <div class="projects-grid" id="projects-grid" aria-live="polite">
+                        <p class="projects-status" id="projects-status">正在连接 API…</p>
+                    </div>
+                </section>
+                
+                <!-- 功能按钮 -->
+                <section class="action-buttons">
+                    <h3 class="section-title">
+                        <i class="fas fa-compass"></i> 探索更多
+                    </h3>
+                    <div class="buttons-container">
+                        <a href="assets/pdf/resume.pdf" target="_blank" class="action-btn resume-btn">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>查看简历</span>
+                        </a>
+                        <a href="#projects" class="action-btn projects-btn">
+                            <i class="fas fa-code-branch"></i>
+                            <span>我的项目</span>
+                        </a>
+                        <a href="#contact" class="action-btn contact-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>联系我</span>
+                        </a>
+                        <button class="action-btn fun-btn" id="meteor-btn">
+                            <i class="fas fa-meteor"></i>
+                            <span>小惊喜</span>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- 近期动态（占位） -->
+                <section class="updates-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-satellite"></i> 近期动态
+                    </h3>
+                    <div class="updates-content">
+                        <p>🚀 项目列表已接入 FastAPI，改 <code>api/data/projects.json</code> 即可更新展示。</p>
+                        <p>💫 后端未启动时，项目区会显示友好提示，其余页面照常使用。</p>
+                        <p>✨ 主题切换已可用；更多接口与数据表可逐步扩展。</p>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 微信二维码模态框 -->
+    <div class="modal" id="wechat-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3><i class="fab fa-weixin"></i> 我的微信</h3>
+            <div class="qr-container">
+                <img src="assets/images/wechat-qr.jpg" alt="微信二维码" class="qr-code">
+                <p>扫码添加微信，请备注"来自个人网站"</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2026 Aurora's World 在星空中探索，在代码中创造。</p>
+            <p class="footer-links">
+                <a href="#">隐私政策</a> · 
+                <a href="#">使用条款</a> · 
+                <a href="#top">返回顶部</a>
+            </p>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
