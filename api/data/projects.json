@@ -1,0 +1,50 @@
+[
+  {
+    "id": "aurora-site",
+    "title": "个人网站 Aurora's World",
+    "summary": "星空背景、主题切换与动效；右侧内容区接入 FastAPI，项目列表由接口动态加载。",
+    "tags": ["HTML", "CSS", "JavaScript", "FastAPI"],
+    "link": "https://github.com/huxiaoman01",
+    "year": 2025
+  },
+  {
+    "id": "sales-dashboard",
+    "title": "零售销售数据看板（课程/练习）",
+    "summary": "用 Python 清洗销售流水，Pandas 聚合后接 Matplotlib / Pyecharts 做趋势与品类对比，练习从原始表到可读图表的完整链路。",
+    "tags": ["Python", "Pandas", "数据可视化"],
+    "link": "",
+    "year": 2025
+  },
+  {
+    "id": "lib-db-design",
+    "title": "高校图书馆借阅管理系统（数据库设计）",
+    "summary": "E-R 建模、范式分析与 SQL 建表；实现借阅、预约、超期罚金等核心查询与存储过程草案。",
+    "tags": ["MySQL", "数据库设计", "SQL"],
+    "link": "",
+    "year": 2024
+  },
+  {
+    "id": "challenge-cup",
+    "title": "挑战杯 / 大创项目材料与原型",
+    "summary": "负责需求梳理、竞品调研与演示原型说明文档；技术栈以轻量网页原型 + 数据说明为主，锻炼项目表达与迭代。",
+    "tags": ["项目管理", "文档", "原型"],
+    "link": "",
+    "year": 2024
+  },
+  {
+    "id": "nlp-sentiment-demo",
+    "title": "短文本情感倾向简单分析",
+    "summary": "对评论语料做分词与词频统计，尝试基于词典的规则打分与简单对比实验，理解文本预处理与评估的基本流程。",
+    "tags": ["Python", "文本分析", "学习笔记"],
+    "link": "",
+    "year": 2025
+  },
+  {
+    "id": "aurora-api",
+    "title": "个人站配套 API（FastAPI）",
+    "summary": "提供健康检查与项目列表 JSON；CORS 配置便于本地前后端分离调试，为后续 SQLite / 留言板预留扩展点。",
+    "tags": ["FastAPI", "Uvicorn", "REST"],
+    "link": "https://github.com/huxiaoman01",
+    "year": 2026
+  }
+]
