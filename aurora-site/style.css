@@ -486,6 +486,96 @@ body {
     border-color: var(--border-accent);
 }
 
+/* 项目卡片骨架屏 */
+.project-card--skeleton {
+    pointer-events: none;
+    cursor: default;
+}
+
+.project-card--skeleton:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--border-color);
+}
+
+.skeleton-block,
+.skeleton-tag {
+    border-radius: 6px;
+    background: linear-gradient(
+        90deg,
+        rgba(74, 111, 165, 0.12) 0%,
+        rgba(157, 78, 221, 0.18) 50%,
+        rgba(74, 111, 165, 0.12) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.light-theme .skeleton-block,
+.light-theme .skeleton-tag {
+    background: linear-gradient(
+        90deg,
+        rgba(49, 130, 206, 0.1) 0%,
+        rgba(128, 90, 213, 0.16) 50%,
+        rgba(49, 130, 206, 0.1) 100%
+    );
+    background-size: 200% 100%;
+}
+
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-block,
+    .skeleton-tag {
+        animation: none;
+        background: rgba(74, 111, 165, 0.15);
+    }
+
+    .light-theme .skeleton-block,
+    .light-theme .skeleton-tag {
+        background: rgba(49, 130, 206, 0.12);
+    }
+}
+
+.skeleton-block--title {
+    width: 70%;
+    height: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.skeleton-block--line {
+    width: 100%;
+    height: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.skeleton-block--short {
+    width: 85%;
+    margin-bottom: 14px;
+}
+
+.skeleton-block--meta {
+    width: 40%;
+    height: 0.75rem;
+    margin-top: 4px;
+}
+
+.skeleton-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.skeleton-tag {
+    width: 56px;
+    height: 22px;
+    border-radius: 999px;
+}
+
 .project-card__title {
     font-family: 'Quicksand', sans-serif;
     font-size: 1.1rem;

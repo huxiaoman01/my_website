@@ -1,6 +1,6 @@
 # Aurora's World · 个人网站
 
-信息管理专业学生的**前后端分离**个人站点：前端为纯静态页面（星空主题、动效与响应式布局），后端为 FastAPI REST 接口。主页「我的项目」区块在页面加载时请求 `GET /api/projects`，将 `api/data/projects.json` 动态渲染为卡片列表——后端未启动或跨域不匹配时，该区域显示友好错误提示，其余页面仍可用。
+信息管理专业学生的**前后端分离**个人站点：前端为纯静态页面（星空主题、动效与响应式布局），后端为 FastAPI REST 接口。主页「我的项目」区块在页面加载时先显示**骨架屏占位**，再请求 `GET /api/projects`，将经 Pydantic 校验的 `api/data/projects.json` 动态渲染为卡片列表——后端未启动、跨域不匹配或 JSON 非法时，该区域显示友好错误提示，其余页面仍可用。
 
 > 仓库地址：[github.com/huxiaoman01](https://github.com/huxiaoman01)
 
@@ -23,7 +23,7 @@
 FastAPI (8000)
     │  读取
     ▼
-api/data/projects.json  →  动态生成项目卡片
+api/data/projects.json  →  Pydantic 校验  →  骨架屏 → 动态生成项目卡片
 ```
 
 ---
@@ -37,11 +37,12 @@ api/data/projects.json  →  动态生成项目卡片
 - **ThemeManager 类**：封装主题切换逻辑——`localStorage` 持久化偏好、监听 `prefers-color-scheme` 系统主题、联动调整星星视觉强度。
 - **打字机 + 光标闪烁**：昵称逐字输出，完成后注入闪烁光标动画。
 - **玻璃拟态布局**：`backdrop-filter: blur`、渐变边框头像框、卡片 hover 微交互；768px 断点下左右栏变为上下堆叠。
-- **模态框与无障碍**：微信二维码弹层支持点击遮罩关闭；项目区使用 `aria-live="polite"` 便于读屏感知加载状态。
+- **模态框与无障碍**：微信二维码弹层支持点击遮罩关闭；项目区使用 `aria-live="polite"`、`aria-busy` 便于读屏感知加载与更新状态。
+- **项目卡片骨架屏**：请求 API 前先渲染与真实卡片同布局的占位块（shimmer 动画）；桌面端 4 个、移动端 2 个；支持暗/亮主题；`prefers-reduced-motion` 时降级为静态灰块。
 
 ### 前端 · 工程意识
 
-- **前后端分离的数据流**：`loadProjectsFromApi()` 异步拉取 JSON，用 `DocumentFragment` 批量插入 DOM，减少重排。
+- **前后端分离的数据流**：`loadProjectsFromApi()` 先展示骨架屏，再异步拉取 JSON，用 `DocumentFragment` 批量插入 DOM，减少重排；最短展示 300ms，避免本地请求过快时闪烁。
 - **健壮的渲染逻辑**：校验响应是否为数组；外链仅当 `http` 开头时渲染，并加 `rel="noopener noreferrer"`；失败时给出可操作的红色提示（端口、CORS、启动命令）。
 - **渐进增强**：后端不可用时整站仍可浏览；只有「我的项目」区块降级，不影响关于我、技能、简历下载等。
 
@@ -65,7 +66,7 @@ api/data/projects.json  →  动态生成项目卡片
 my_website/
 ├── aurora-site/              # 前端（纯静态）
 │   ├── index.html            # 页面结构，含 #projects 项目展示区
-│   ├── style.css             # 主题变量、动效、响应式、项目卡片样式
+│   ├── style.css             # 主题变量、动效、响应式、项目卡片与骨架屏样式
 │   ├── script.js             # 星空、主题、API 加载、交互逻辑
 │   └── assets/               # 头像、微信二维码、简历 PDF 等
 ├── api/                      # 后端（FastAPI）
@@ -125,18 +126,21 @@ python -m http.server 5500
 
 浏览器访问：http://127.0.0.1:5500/
 
-页面向下滚动即可看到 **「我的项目」**；侧栏 **「探索更多 → 我的项目」** 会平滑滚动到该区域。
+页面向下滚动即可看到 **「我的项目」**（先出现骨架屏，再加载为卡片）；侧栏 **「探索更多 → 我的项目」** 会平滑滚动到该区域。
 
 > **注意**：直接双击 `index.html`（`file://`）时，跨域限制可能导致项目列表无法加载；联调请优先使用 `http.server 5500`。
+
+> **改前端后要不要重启？** 静态文件（HTML / CSS / JS）保存后**刷新浏览器**即可（必要时 `Ctrl+F5` 硬刷新）；无需重启 `http.server`。后端若使用 `--reload` 启动，改 `main.py` / `schemas.py` 会自动重载；未加 `--reload` 则需手动重启 uvicorn。
 
 ---
 
 ## 前后端联动
 
 1. 浏览器打开 `http://127.0.0.1:5500/`，执行 `script.js` 中的 `loadProjectsFromApi()`。
-2. 请求 `GET {API_BASE}/api/projects`。
-3. 返回 JSON 数组后，在 `#projects-grid` 内动态生成卡片（标题、简介、标签、年份、`id`、外链等）。
-4. 修改展示内容：编辑 `api/data/projects.json` 后保存并刷新浏览器即可（后端 `--reload` 会重载进程）。
+2. **加载态**：`#projects-grid` 先插入 2～4 个骨架卡片（`aria-busy="true"`）。
+3. 请求 `GET {API_BASE}/api/projects`；后端读取并 Pydantic 校验 `projects.json`。
+4. 返回 JSON 数组后，清空骨架并在 `#projects-grid` 内动态生成真实卡片（标题、简介、标签、年份、`id`、外链等）；失败或空数组则显示对应提示文案。
+5. 修改展示内容：编辑 `api/data/projects.json` 后保存并刷新浏览器即可（后端 `--reload` 会重载进程；数据须符合 `schemas.py` 字段规则）。
 
 若更换前端端口或 API 地址：同步修改 **`aurora-site/script.js` 顶部的 `API_BASE`**，并在 **`api/main.py` 的 `allow_origins`** 中加入对应来源。
 
@@ -189,6 +193,8 @@ python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 **CORS 错误** — 确认 `allow_origins` 包含当前页面的协议 + 主机 + 端口，并与 `API_BASE` 一致。
 
 **接口返回 500 / 项目区无法加载** — 打开 <http://127.0.0.1:8000/docs> 试调 `GET /api/projects`，查看 `detail.errors` 中指明的条目 index 与字段；常见原因：缺少必填字段、`id` 含大写或空格、`year` 写成字符串、两条记录 `id` 相同。
+
+**改了前端样式或脚本但页面没变化** — 确认通过 `http://127.0.0.1:5500` 访问（非 `file://`）；尝试 `Ctrl+F5` 硬刷新清除浏览器缓存。
 
 ---
 
