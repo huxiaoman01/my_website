@@ -1,6 +1,60 @@
 # Aurora's World · 个人网站
 
-前后端分离方向的练习项目：**静态个人主页**（`aurora-site`）+ **FastAPI 接口**（`api`）。前端负责布局、动效与主题；后端提供 JSON。**主页「我的项目」区块**会在页面加载时请求 `GET /api/projects`，将 `api/data/projects.json` 渲染为卡片列表（后端未启动或跨域不匹配时，该区域会显示错误提示，其余页面仍可用）。
+信息管理专业学生的**前后端分离**个人站点：前端为纯静态页面（星空主题、动效与响应式布局），后端为 FastAPI REST 接口。主页「我的项目」区块在页面加载时请求 `GET /api/projects`，将 `api/data/projects.json` 动态渲染为卡片列表——后端未启动或跨域不匹配时，该区域显示友好错误提示，其余页面仍可用。
+
+> 仓库地址：[github.com/huxiaoman01](https://github.com/huxiaoman01)
+
+---
+
+## 项目概览
+
+| 维度 | 说明 |
+|------|------|
+| **定位** | 个人品牌展示 + 前后端联调练习 |
+| **前端** | `aurora-site/` — HTML / CSS / 原生 JavaScript，无构建工具 |
+| **后端** | `api/` — FastAPI + Uvicorn，JSON 文件作数据源 |
+| **联调方式** | 前端 `5500` 端口 + API `8000` 端口，`fetch` + CORS |
+| **适用场景** | 简历链接、课程作业展示、本地开发演示 |
+
+```
+浏览器 (5500)
+    │  fetch GET /api/projects
+    ▼
+FastAPI (8000)
+    │  读取
+    ▼
+api/data/projects.json  →  动态生成项目卡片
+```
+
+---
+
+## 技术亮点（体现功底的部分）
+
+### 前端 · 视觉与交互
+
+- **CSS 变量 + 双主题**：`:root` 与 `.light-theme` 统一管理配色；切换主题时背景、卡片、星星等全局过渡，而非硬编码两套样式。
+- **星空动效系统**：JS 动态生成 150 颗星星（随机大小、位置、透明度、动画时长）；定时器驱动流星；「小惊喜」按钮可批量触发流星雨，动画结束后 DOM 自动清理，避免内存泄漏。
+- **ThemeManager 类**：封装主题切换逻辑——`localStorage` 持久化偏好、监听 `prefers-color-scheme` 系统主题、联动调整星星视觉强度。
+- **打字机 + 光标闪烁**：昵称逐字输出，完成后注入闪烁光标动画。
+- **玻璃拟态布局**：`backdrop-filter: blur`、渐变边框头像框、卡片 hover 微交互；768px 断点下左右栏变为上下堆叠。
+- **模态框与无障碍**：微信二维码弹层支持点击遮罩关闭；项目区使用 `aria-live="polite"` 便于读屏感知加载状态。
+
+### 前端 · 工程意识
+
+- **前后端分离的数据流**：`loadProjectsFromApi()` 异步拉取 JSON，用 `DocumentFragment` 批量插入 DOM，减少重排。
+- **健壮的渲染逻辑**：校验响应是否为数组；外链仅当 `http` 开头时渲染，并加 `rel="noopener noreferrer"`；失败时给出可操作的红色提示（端口、CORS、启动命令）。
+- **渐进增强**：后端不可用时整站仍可浏览；只有「我的项目」区块降级，不影响关于我、技能、简历下载等。
+
+### 后端 · API 设计
+
+- **RESTful 路由**：`/api/health` 健康检查、`/api/projects` 列表、`/api/projects/{id}` 单条查询（404 语义正确）。
+- **CORS 中间件**：开发环境白名单覆盖常见本地端口（5500 / 8000 / 3000），便于联调；代码注释标明上线需收紧。
+- **路径与编码规范**：`pathlib.Path` 定位数据文件；`utf-8` 读取 JSON；文件不存在时返回空数组而非崩溃。
+- **OpenAPI 文档**：启动后自动生成 Swagger / ReDoc，体现 API 可文档化、可测试的习惯。
+
+### 内容与作品集整合
+
+`projects.json` 将个人站本身、数据看板、数据库课设、大创材料、文本分析、FastAPI 接口等条目统一展示——改 JSON 即可更新主页，无需改 HTML，体现**数据驱动页面**的基本思路。
 
 ---
 
@@ -9,16 +63,16 @@
 ```
 my_website/
 ├── aurora-site/              # 前端（纯静态）
-│   ├── index.html            # 含 #projects 项目展示区
-│   ├── style.css             # 含项目卡片等样式
-│   ├── script.js             # API_BASE、loadProjectsFromApi、主题等逻辑
-│   └── assets/               # 图片、图标、简历 PDF 等资源
+│   ├── index.html            # 页面结构，含 #projects 项目展示区
+│   ├── style.css             # 主题变量、动效、响应式、项目卡片样式
+│   ├── script.js             # 星空、主题、API 加载、交互逻辑
+│   └── assets/               # 头像、微信二维码、简历 PDF 等
 ├── api/                      # 后端（FastAPI）
-│   ├── main.py               # 路由与 CORS
+│   ├── main.py               # 路由、CORS、JSON 读取
 │   ├── requirements.txt
 │   ├── data/
-│   │   └── projects.json     # 项目列表数据源（可被前端拉取展示）
-│   └── .venv/                # 本地虚拟环境（建议加入 .gitignore）
+│   │   └── projects.json     # 项目列表数据源
+│   └── .venv/                # 本地虚拟环境（已在 .gitignore）
 └── README.md
 ```
 
@@ -27,7 +81,7 @@ my_website/
 ## 环境要求
 
 - **Python**：建议 3.11+（依赖在 3.13 下可用）
-- **浏览器**：任意现代浏览器（Chrome / Edge / Firefox 等）
+- **浏览器**：Chrome / Edge / Firefox 等现代浏览器
 
 前端无需 Node.js；若日后引入 Vite / React 等再单独说明。
 
@@ -35,9 +89,9 @@ my_website/
 
 ## 快速开始
 
-本地联调需要**同时**运行：前端静态服务（默认 **5500**）+ 后端 API（**8000**）。`script.js` 中 `API_BASE` 默认为 `http://127.0.0.1:8000`，与 `main.py` 里 CORS 允许的 `5500` 前端来源一致。
+本地联调需**同时**运行：前端静态服务（默认 **5500**）+ 后端 API（**8000**）。`script.js` 中 `API_BASE` 默认为 `http://127.0.0.1:8000`，与 `main.py` 里 CORS 允许的 `5500` 前端来源一致。
 
-### 1. 启动后端 API（FastAPI）
+### 1. 启动后端 API
 
 ```powershell
 cd api
@@ -53,50 +107,40 @@ python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-**说明**：激活后提示符前会出现 `(.venv)`。务必在 **`api` 目录** 下执行上述命令，否则找不到 `main:app`。日常重启电脑后，只需 `cd api` → 激活 `.venv` → 再执行 `python -m uvicorn ...`，无需重复 `python -m venv`（除非删除了 `.venv`）。
-
 | 说明 | 地址 |
 |------|------|
-| Swagger 文档 | <http://127.0.0.1:8000/docs> |
-| ReDoc 文档 | <http://127.0.0.1:8000/redoc> |
-| 健康检查 | <http://127.0.0.1:8000/api/health> |
-| 项目列表（与主页同源数据） | <http://127.0.0.1:8000/api/projects> |
+| Swagger 文档 | http://127.0.0.1:8000/docs |
+| ReDoc 文档 | http://127.0.0.1:8000/redoc |
+| 健康检查 | http://127.0.0.1:8000/api/health |
+| 项目列表 | http://127.0.0.1:8000/api/projects |
 
-根路径 `http://127.0.0.1:8000/` 未配置页面时可能返回 **404**，属正常现象。
-
----
-
-### 2. 查看个人主页（前端）
-
-**推荐：本地 HTTP（与 `fetch` + CORS 一致）**
+### 2. 启动前端
 
 ```powershell
 cd aurora-site
 python -m http.server 5500
 ```
 
-浏览器访问：<http://127.0.0.1:5500/>
+浏览器访问：http://127.0.0.1:5500/
 
-页面向下滚动即可看到 **「我的项目」**；侧栏/下方 **「探索更多 → 我的项目」** 会平滑滚动到该区域。
+页面向下滚动即可看到 **「我的项目」**；侧栏 **「探索更多 → 我的项目」** 会平滑滚动到该区域。
 
-**仅打开 `index.html`（`file://`）**：整站仍可浏览，但浏览器对跨域限制更严，**项目列表很可能无法加载**；联调时请优先用 `http.server 5500`。
-
-**只开前端、不开后端**：项目区会显示红色提示文案；其它板块（关于我、技能、动效等）不受影响。
+> **注意**：直接双击 `index.html`（`file://`）时，跨域限制可能导致项目列表无法加载；联调请优先使用 `http.server 5500`。
 
 ---
 
-## 前后端如何联动（当前实现）
+## 前后端联动
 
-1. 浏览器打开 `http://127.0.0.1:5500/`，执行 `script.js` 中的 `loadProjectsFromApi()`。  
-2. 请求 `GET {API_BASE}/api/projects`，默认即 `http://127.0.0.1:8000/api/projects`。  
-3. 返回 JSON 数组后，在 `#projects-grid` 内动态生成卡片（标题、简介、标签、年份与 `id`、外链等）。  
-4. 修改展示内容：编辑 `api/data/projects.json` 后保存，刷新浏览器即可（后端 `--reload` 会重载进程；数据为每次请求读取文件）。
+1. 浏览器打开 `http://127.0.0.1:5500/`，执行 `script.js` 中的 `loadProjectsFromApi()`。
+2. 请求 `GET {API_BASE}/api/projects`。
+3. 返回 JSON 数组后，在 `#projects-grid` 内动态生成卡片（标题、简介、标签、年份、`id`、外链等）。
+4. 修改展示内容：编辑 `api/data/projects.json` 后保存并刷新浏览器即可（后端 `--reload` 会重载进程）。
 
-若更换前端端口或 API 地址：同步修改 **`aurora-site/script.js` 顶部的 `API_BASE`**，并在 **`api/main.py` 的 `allow_origins`** 中加入你的前端来源。
+若更换前端端口或 API 地址：同步修改 **`aurora-site/script.js` 顶部的 `API_BASE`**，并在 **`api/main.py` 的 `allow_origins`** 中加入对应来源。
 
 ---
 
-## API 说明（当前版本）
+## API 说明
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
@@ -108,30 +152,14 @@ python -m http.server 5500
 
 ## `projects.json` 字段约定
 
-每条记录建议包含以下字段（与前端渲染逻辑一致）：
-
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | `id` | 字符串 | 唯一标识，用于 `/api/projects/{id}` |
 | `title` | 字符串 | 卡片标题 |
 | `summary` | 字符串 | 卡片简介 |
 | `tags` | 字符串数组 | 标签列表 |
-| `link` | 字符串 | 可选；**仅当以 `http` 开头** 时，卡片显示「查看链接」并在新标签页打开 |
+| `link` | 字符串 | 可选；**仅当以 `http` 开头** 时显示「查看链接」 |
 | `year` | 数字 | 可选；显示在卡片元信息区 |
-
-仓库内已预置多条示例（个人站、数据看板练习、数据库课设、大创材料、文本分析练习、FastAPI 接口说明等），可直接增删改。**请保持合法 JSON**（逗号、引号、括号匹配）。
-
----
-
-## 跨域（CORS）
-
-`api/main.py` 中 `CORSMiddleware` 的 `allow_origins` 开发环境包含：
-
-- `http://127.0.0.1:5500`、`http://localhost:5500`
-- `http://127.0.0.1:8000`、`http://localhost:8000`
-- `http://127.0.0.1:3000`、`http://localhost:3000`
-
-上线前改为你的**真实前端域名**，避免过于宽松的白名单。
 
 ---
 
@@ -139,62 +167,34 @@ python -m http.server 5500
 
 见 `api/requirements.txt`：
 
-- `fastapi`：Web 框架与 OpenAPI 文档  
-- `uvicorn[standard]`：ASGI 服务器（含热重载等）
-
-在已激活的虚拟环境中安装：
-
-```powershell
-pip install -r requirements.txt
-```
+- `fastapi` — Web 框架与 OpenAPI 文档
+- `uvicorn[standard]` — ASGI 服务器（含热重载）
 
 ---
 
 ## 常见问题
 
-### 1. `uvicorn` 不是内部或外部命令
-
-未激活虚拟环境，或 `Scripts` 未加入 PATH。在已激活的 `.venv` 下使用：
+**`uvicorn` 不是内部或外部命令** — 在已激活的 `.venv` 下使用：
 
 ```powershell
 python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-也可不激活，直接：
+**项目区无法加载 / 控制台 `fetch` 失败** — 检查后端是否在 `127.0.0.1:8000` 运行；前端是否通过 `http://127.0.0.1:5500` 访问；防火墙是否拦截本地请求。
 
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
-```
-
-### 2. `Attribute "app" not found in module "main"`
-
-多为 **`api/main.py` 未保存或磁盘上为空**。请保存文件并确认存在 `app = FastAPI(...)`。
-
-### 3. `pip install` 提示写入系统目录失败
-
-先创建并**激活**虚拟环境，再执行 `pip install -r requirements.txt`，依赖会安装到 `.venv`。
-
-### 4. 项目区提示无法加载 / 控制台 `fetch` 失败
-
-- 后端是否在 `127.0.0.1:8000` 运行？  
-- 前端是否通过 **`http://127.0.0.1:5500`**（或已在 CORS 中配置的来源）访问？  
-- 防火墙或代理是否拦截本地请求？
-
-### 5. 前端 `fetch` 报 CORS 错误
-
-检查 `allow_origins` 是否包含当前页面的协议 + 主机 + 端口，并与 `API_BASE` 指向的后端地址一致。
+**CORS 错误** — 确认 `allow_origins` 包含当前页面的协议 + 主机 + 端口，并与 `API_BASE` 一致。
 
 ---
 
-## 后续可扩展方向（备忘）
+## 后续可扩展方向
 
-- 用 Pydantic 模型约束 `projects` 的请求/响应结构  
-- 将 `projects.json` 换为 SQLite / PostgreSQL  
-- 新增留言、访问量等 `POST` 接口，并做鉴权或限流  
-- 生产部署：前端静态托管（如 GitHub Pages）+ 后端独立服务；或用 Nginx 同域反代 `/api`  
+- 用 Pydantic 模型约束 `projects` 的请求/响应结构
+- 将 `projects.json` 换为 SQLite / PostgreSQL
+- 新增留言、访问量等 `POST` 接口，并做鉴权或限流
+- 生产部署：前端静态托管（GitHub Pages 等）+ 后端独立服务，或用 Nginx 同域反代 `/api`
 
 ---
 
 ## 许可证
 
-个人学习/展示用项目；如需开源再补充具体许可证条款即可。
+个人学习 / 展示用项目；如需开源再补充具体许可证条款即可。
