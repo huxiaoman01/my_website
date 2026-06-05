@@ -48,9 +48,10 @@ api/data/projects.json  →  动态生成项目卡片
 ### 后端 · API 设计
 
 - **RESTful 路由**：`/api/health` 健康检查、`/api/projects` 列表、`/api/projects/{id}` 单条查询（404 语义正确）。
+- **Pydantic 数据校验**：`schemas.py` 定义 `Project` 模型；每次请求读取 `projects.json` 后校验字段类型与格式，`id` 不可重复；非法数据返回 **500** 及具体错误路径。
 - **CORS 中间件**：开发环境白名单覆盖常见本地端口（5500 / 8000 / 3000），便于联调；代码注释标明上线需收紧。
 - **路径与编码规范**：`pathlib.Path` 定位数据文件；`utf-8` 读取 JSON；文件不存在时返回空数组而非崩溃。
-- **OpenAPI 文档**：启动后自动生成 Swagger / ReDoc，体现 API 可文档化、可测试的习惯。
+- **OpenAPI 文档**：路由声明 `response_model=list[Project]`，Swagger / ReDoc 自动展示完整字段 schema。
 
 ### 内容与作品集整合
 
@@ -68,7 +69,8 @@ my_website/
 │   ├── script.js             # 星空、主题、API 加载、交互逻辑
 │   └── assets/               # 头像、微信二维码、简历 PDF 等
 ├── api/                      # 后端（FastAPI）
-│   ├── main.py               # 路由、CORS、JSON 读取
+│   ├── main.py               # 路由、CORS、JSON 读取与校验
+│   ├── schemas.py            # Pydantic Project 模型与字段规则
 │   ├── requirements.txt
 │   ├── data/
 │   │   └── projects.json     # 项目列表数据源
@@ -152,14 +154,16 @@ python -m http.server 5500
 
 ## `projects.json` 字段约定
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `id` | 字符串 | 唯一标识，用于 `/api/projects/{id}` |
-| `title` | 字符串 | 卡片标题 |
-| `summary` | 字符串 | 卡片简介 |
-| `tags` | 字符串数组 | 标签列表 |
-| `link` | 字符串 | 可选；**仅当以 `http` 开头** 时显示「查看链接」 |
-| `year` | 数字 | 可选；显示在卡片元信息区 |
+后端通过 `api/schemas.py` 中的 `Project` 模型校验；任一条目不合法或 `id` 重复时，`GET /api/projects` 与 `GET /api/projects/{id}` 返回 **500**，响应 `detail` 中含 `errors` 或 `duplicate_ids`，便于定位问题。
+
+| 字段 | 类型 | 校验规则 | 说明 |
+|------|------|----------|------|
+| `id` | 字符串 | 必填；小写字母、数字、连字符；列表内唯一 | 用于 `/api/projects/{id}` |
+| `title` | 字符串 | 必填；1～80 字符 | 卡片标题 |
+| `summary` | 字符串 | 必填；1～500 字符 | 卡片简介 |
+| `tags` | 字符串数组 | 必填；每项为非空字符串 | 标签列表，可为 `[]` |
+| `link` | 字符串 | 可选；默认 `""`；非空时必须以 `http://` 或 `https://` 开头 | 前端仅在有合法外链时显示「查看链接」 |
+| `year` | 整数 | 可选；2000～2100 | 显示在卡片元信息区 |
 
 ---
 
@@ -184,11 +188,12 @@ python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 **CORS 错误** — 确认 `allow_origins` 包含当前页面的协议 + 主机 + 端口，并与 `API_BASE` 一致。
 
+**接口返回 500 / 项目区无法加载** — 打开 <http://127.0.0.1:8000/docs> 试调 `GET /api/projects`，查看 `detail.errors` 中指明的条目 index 与字段；常见原因：缺少必填字段、`id` 含大写或空格、`year` 写成字符串、两条记录 `id` 相同。
+
 ---
 
 ## 后续可扩展方向
 
-- 用 Pydantic 模型约束 `projects` 的请求/响应结构
 - 将 `projects.json` 换为 SQLite / PostgreSQL
 - 新增留言、访问量等 `POST` 接口，并做鉴权或限流
 - 生产部署：前端静态托管（GitHub Pages 等）+ 后端独立服务，或用 Nginx 同域反代 `/api`
