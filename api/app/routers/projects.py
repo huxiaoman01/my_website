@@ -13,6 +13,17 @@ router = APIRouter(prefix="/api", tags=["projects"])
 _project_list_adapter = TypeAdapter(list[Project])
 
 
+def _serializable_errors(exc: ValidationError) -> list[dict]:
+    """把 ctx 里的异常对象转成字符串，保证错误详情能被 JSON 序列化。"""
+    errors = []
+    for error in exc.errors():
+        cleaned = dict(error)
+        if "ctx" in cleaned:
+            cleaned["ctx"] = {key: str(value) for key, value in cleaned["ctx"].items()}
+        errors.append(cleaned)
+    return errors
+
+
 def load_projects(projects_file: Path) -> list[Project]:
     """读取并校验项目列表：文件缺失返回空数组，数据非法返回 500 及错误详情。"""
     if not projects_file.is_file():
@@ -31,7 +42,10 @@ def load_projects(projects_file: Path) -> list[Project]:
     except ValidationError as exc:
         raise HTTPException(
             status_code=500,
-            detail={"message": "projects.json validation failed", "errors": exc.errors()},
+            detail={
+                "message": "projects.json validation failed",
+                "errors": _serializable_errors(exc),
+            },
         ) from exc
 
     ids = [project.id for project in projects]

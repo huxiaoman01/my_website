@@ -1,0 +1,93 @@
+"""项目接口：正常读写、单条查询，以及数据非法时的 500 详情。"""
+
+import json
+from pathlib import Path
+
+import pytest
+
+VALID_PROJECT = {
+    "id": "demo-project",
+    "title": "示例项目",
+    "summary": "用于测试的项目条目。",
+    "tags": ["Python", "FastAPI"],
+    "link": "",
+    "year": 2025,
+}
+
+
+def write_projects(projects_file: Path, payload: object) -> None:
+    projects_file.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+
+def test_list_returns_all_entries(client, projects_file):
+    write_projects(projects_file, [VALID_PROJECT, {**VALID_PROJECT, "id": "second-project"}])
+
+    response = client.get("/api/projects")
+
+    assert response.status_code == 200
+    assert [item["id"] for item in response.json()] == ["demo-project", "second-project"]
+
+
+def test_missing_file_returns_empty_list(client):
+    response = client.get("/api/projects")
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_get_project_by_id(client, projects_file):
+    write_projects(projects_file, [VALID_PROJECT])
+
+    response = client.get("/api/projects/demo-project")
+
+    assert response.status_code == 200
+    assert response.json()["title"] == "示例项目"
+
+
+def test_unknown_project_returns_404(client, projects_file):
+    write_projects(projects_file, [VALID_PROJECT])
+
+    response = client.get("/api/projects/not-exist")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "project not found"
+
+
+@pytest.mark.parametrize(
+    "invalid_entry",
+    [
+        {"title": "缺少 id", "summary": "内容"},
+        {**VALID_PROJECT, "id": "Demo Project"},
+        {**VALID_PROJECT, "title": ""},
+        {**VALID_PROJECT, "year": 1999},
+        {**VALID_PROJECT, "tags": [""]},
+        {**VALID_PROJECT, "link": "ftp://example.com"},
+    ],
+)
+def test_invalid_entry_returns_500_with_errors(client, projects_file, invalid_entry):
+    write_projects(projects_file, [invalid_entry])
+
+    response = client.get("/api/projects")
+
+    assert response.status_code == 500
+    detail = response.json()["detail"]
+    assert detail["message"] == "projects.json validation failed"
+    assert detail["errors"]
+
+
+def test_duplicate_ids_are_reported(client, projects_file):
+    write_projects(projects_file, [VALID_PROJECT, {**VALID_PROJECT, "title": "重复 id"}])
+
+    response = client.get("/api/projects")
+
+    assert response.status_code == 500
+    assert response.json()["detail"]["duplicate_ids"] == ["demo-project"]
+
+
+def test_malformed_json_returns_500(client, projects_file):
+    projects_file.write_text("{ 这不是 JSON", encoding="utf-8")
+
+    response = client.get("/api/projects")
+
+    assert response.status_code == 500
+    assert "JSON" in response.json()["detail"]["message"]
