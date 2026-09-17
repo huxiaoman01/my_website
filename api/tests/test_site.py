@@ -30,6 +30,11 @@ def test_frontend_assets_are_served(client):
     assert client.get("/assets/images/favicon.svg").status_code == 200
 
 
+def test_static_assets_are_revalidated(client):
+    """本地开发时静态文件必须回源校验，避免改动后浏览器仍用旧缓存。"""
+    assert client.get("/js/main.js").headers["cache-control"] == "no-cache"
+
+
 def test_unknown_path_returns_404(client):
     assert client.get("/no-such-page").status_code == 404
 

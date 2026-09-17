@@ -62,6 +62,11 @@ def test_unknown_project_returns_404(client, projects_file):
         {**VALID_PROJECT, "year": 1999},
         {**VALID_PROJECT, "tags": [""]},
         {**VALID_PROJECT, "link": "ftp://example.com"},
+        {**VALID_PROJECT, "link": "javascript:alert(1)"},
+        {**VALID_PROJECT, "link": "//evil.example.com"},
+        {**VALID_PROJECT, "link": "../../etc/passwd"},
+        {**VALID_PROJECT, "link": "assets/../secret.txt"},
+        {**VALID_PROJECT, "link": "images/avatar.jpg"},
     ],
 )
 def test_invalid_entry_returns_500_with_errors(client, projects_file, invalid_entry):
@@ -82,6 +87,19 @@ def test_duplicate_ids_are_reported(client, projects_file):
 
     assert response.status_code == 500
     assert response.json()["detail"]["duplicate_ids"] == ["demo-project"]
+
+
+@pytest.mark.parametrize(
+    "link",
+    ["assets/dashboards/messages-dashboard.html", "/assets/images/avatar.jpg"],
+)
+def test_site_relative_links_are_accepted(client, projects_file, link):
+    write_projects(projects_file, [{**VALID_PROJECT, "link": link}])
+
+    response = client.get("/api/projects")
+
+    assert response.status_code == 200
+    assert response.json()[0]["link"] == link
 
 
 def test_malformed_json_returns_500(client, projects_file):

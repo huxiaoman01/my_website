@@ -11,11 +11,20 @@
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .core.config import Settings
 from .routers import messages, projects
+
+
+class DevStaticFiles(StaticFiles):
+    """本地开发用：静态文件始终回源校验（no-cache + ETag），改完 JS/CSS 刷新即可见。"""
+
+    async def get_response(self, path: str, scope: dict) -> Response:
+        response = await super().get_response(path, scope)
+        response.headers.setdefault("cache-control", "no-cache")
+        return response
 
 
 def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
@@ -65,7 +74,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # 静态站点最后挂载：/api、/docs、/openapi.json 等路由优先生效。
     if settings.static_dir.is_dir():
-        app.mount("/", StaticFiles(directory=str(settings.static_dir), html=True), name="site")
+        app.mount("/", DevStaticFiles(directory=str(settings.static_dir), html=True), name="site")
 
     return app
 

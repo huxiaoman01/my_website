@@ -25,12 +25,17 @@ class Project(BaseModel):
 
     @field_validator("link")
     @classmethod
-    def link_must_be_http_or_empty(cls, value: str) -> str:
+    def link_must_be_http_or_asset_path(cls, value: str) -> str:
+        """外链必须是 http(s)；站内链接只允许指向 assets/ 下的资源。"""
         trimmed = value.strip()
         if not trimmed:
             return ""
-        if not trimmed.startswith(("http://", "https://")):
-            raise ValueError("link must start with http:// or https:// when provided")
+        if trimmed.startswith(("http://", "https://")):
+            return trimmed
+        if trimmed.startswith("//") or ":" in trimmed or "\\" in trimmed or ".." in trimmed:
+            raise ValueError("link must be an http(s) URL or a site-relative assets path")
+        if not trimmed.startswith(("assets/", "/assets/")):
+            raise ValueError("site-relative link must point into assets/")
         return trimmed
 
 
