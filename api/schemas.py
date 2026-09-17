@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field, field_validator
@@ -31,3 +32,21 @@ class Project(BaseModel):
         if not trimmed.startswith(("http://", "https://")):
             raise ValueError("link must start with http:// or https:// when provided")
         return trimmed
+
+
+class MessageCreate(BaseModel):
+    name: Annotated[str, Field(min_length=1, max_length=20)]
+    content: Annotated[str, Field(min_length=1, max_length=300)]
+
+    @field_validator("name", "content")
+    @classmethod
+    def strip_required_text(cls, value: str) -> str:
+        trimmed = value.strip()
+        if not trimmed:
+            raise ValueError("field cannot be empty")
+        return trimmed
+
+
+class Message(MessageCreate):
+    id: int
+    created_at: datetime

@@ -1,6 +1,6 @@
 # Aurora's World · 个人网站
 
-信息管理专业学生的**前后端分离**个人站点：前端为纯静态页面（星空主题、动效与响应式布局），后端为 FastAPI REST 接口。主页「我的项目」区块在页面加载时先显示**骨架屏占位**，再请求 `GET /api/projects`，将经 Pydantic 校验的 `api/data/projects.json` 动态渲染为卡片列表——后端未启动、跨域不匹配或 JSON 非法时，该区域显示友好错误提示，其余页面仍可用。
+信息管理专业学生的**前后端分离**个人站点：前端为纯静态页面（星空主题、动效与响应式布局），后端为 FastAPI REST 接口。主页「我的项目」区块在页面加载时先显示**骨架屏占位**，再请求 `GET /api/projects`，将经 Pydantic 校验的 `api/data/projects.json` 动态渲染为卡片列表；「留言板」通过 `GET/POST /api/messages` 读写 SQLite，刷新页面后留言仍会保留。后端未启动、跨域不匹配或数据非法时，对应区块显示友好错误提示，其余页面仍可用。
 
 > 仓库地址：[github.com/huxiaoman01](https://github.com/huxiaoman01)
 
@@ -12,18 +12,18 @@
 |------|------|
 | **定位** | 个人品牌展示 + 前后端联调练习 |
 | **前端** | `aurora-site/` — HTML / CSS / 原生 JavaScript，无构建工具 |
-| **后端** | `api/` — FastAPI + Uvicorn，JSON 文件作数据源 |
+| **后端** | `api/` — FastAPI + Uvicorn，JSON 文件 + SQLite 作数据源 |
 | **联调方式** | 前端 `5500` 端口 + API `8000` 端口，`fetch` + CORS |
 | **适用场景** | 简历链接、课程作业展示、本地开发演示 |
 
 ```
 浏览器 (5500)
     │  fetch GET /api/projects
+    │  fetch GET/POST /api/messages
     ▼
 FastAPI (8000)
-    │  读取
-    ▼
-api/data/projects.json  →  Pydantic 校验  →  骨架屏 → 动态生成项目卡片
+    ├─ api/data/projects.json  →  Pydantic 校验  →  骨架屏 → 动态生成项目卡片
+    └─ api/data/messages.db    →  SQLite 持久化 →  留言列表 / 发布留言
 ```
 
 ---
@@ -39,17 +39,20 @@ api/data/projects.json  →  Pydantic 校验  →  骨架屏 → 动态生成项
 - **玻璃拟态布局**：`backdrop-filter: blur`、渐变边框头像框、卡片 hover 微交互；768px 断点下左右栏变为上下堆叠。
 - **模态框与无障碍**：微信二维码弹层支持点击遮罩关闭；项目区使用 `aria-live="polite"`、`aria-busy` 便于读屏感知加载与更新状态。
 - **项目卡片骨架屏**：请求 API 前先渲染与真实卡片同布局的占位块（shimmer 动画）；桌面端 4 个、移动端 2 个；支持暗/亮主题；`prefers-reduced-motion` 时降级为静态灰块。
+- **留言板交互**：昵称 + 留言内容表单，提交时按钮进入加载态；成功后自动刷新最新留言，失败时在页面内提示而不打断浏览。
 
 ### 前端 · 工程意识
 
 - **前后端分离的数据流**：`loadProjectsFromApi()` 先展示骨架屏，再异步拉取 JSON，用 `DocumentFragment` 批量插入 DOM，减少重排；最短展示 300ms，避免本地请求过快时闪烁。
+- **可部署 API 地址**：前端默认本地请求 `127.0.0.1:8000`；当页面运行在 `124.222.53.145` 时自动请求 `124.222.53.145:8000`，便于服务器入口先跑通。
 - **健壮的渲染逻辑**：校验响应是否为数组；外链仅当 `http` 开头时渲染，并加 `rel="noopener noreferrer"`；失败时给出可操作的红色提示（端口、CORS、启动命令）。
 - **渐进增强**：后端不可用时整站仍可浏览；只有「我的项目」区块降级，不影响关于我、技能、简历下载等。
 
 ### 后端 · API 设计
 
-- **RESTful 路由**：`/api/health` 健康检查、`/api/projects` 列表、`/api/projects/{id}` 单条查询（404 语义正确）。
+- **RESTful 路由**：`/api/health` 健康检查、`/api/projects` 列表、`/api/projects/{id}` 单条查询、`/api/messages` 留言读写。
 - **Pydantic 数据校验**：`schemas.py` 定义 `Project` 模型；每次请求读取 `projects.json` 后校验字段类型与格式，`id` 不可重复；非法数据返回 **500** 及具体错误路径。
+- **SQLite 持久化留言**：后端启动时自动创建 `api/data/messages.db` 和 `messages` 表；`POST /api/messages` 对昵称、内容做长度与空值校验，写入后立即公开展示。
 - **CORS 中间件**：开发环境白名单覆盖常见本地端口（5500 / 8000 / 3000），便于联调；代码注释标明上线需收紧。
 - **路径与编码规范**：`pathlib.Path` 定位数据文件；`utf-8` 读取 JSON；文件不存在时返回空数组而非崩溃。
 - **OpenAPI 文档**：路由声明 `response_model=list[Project]`，Swagger / ReDoc 自动展示完整字段 schema。
@@ -65,16 +68,17 @@ api/data/projects.json  →  Pydantic 校验  →  骨架屏 → 动态生成项
 ```
 my_website/
 ├── aurora-site/              # 前端（纯静态）
-│   ├── index.html            # 页面结构，含 #projects 项目展示区
+│   ├── index.html            # 页面结构，含 #projects 项目展示区与 #guestbook 留言板
 │   ├── style.css             # 主题变量、动效、响应式、项目卡片与骨架屏样式
 │   ├── script.js             # 星空、主题、API 加载、交互逻辑
 │   └── assets/               # 头像、微信二维码、简历 PDF 等
 ├── api/                      # 后端（FastAPI）
-│   ├── main.py               # 路由、CORS、JSON 读取与校验
-│   ├── schemas.py            # Pydantic Project 模型与字段规则
+│   ├── main.py               # 路由、CORS、JSON 读取、SQLite 留言读写
+│   ├── schemas.py            # Pydantic Project / Message 模型与字段规则
 │   ├── requirements.txt
 │   ├── data/
-│   │   └── projects.json     # 项目列表数据源
+│   │   ├── projects.json     # 项目列表数据源
+│   │   └── messages.db       # 留言 SQLite 数据库（运行后生成，已忽略）
 │   └── .venv/                # 本地虚拟环境（已在 .gitignore）
 └── README.md
 ```
@@ -116,6 +120,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | ReDoc 文档 | http://127.0.0.1:8000/redoc |
 | 健康检查 | http://127.0.0.1:8000/api/health |
 | 项目列表 | http://127.0.0.1:8000/api/projects |
+| 留言列表 | http://127.0.0.1:8000/api/messages |
 
 ### 2. 启动前端
 
@@ -126,7 +131,7 @@ python -m http.server 5500
 
 浏览器访问：http://127.0.0.1:5500/
 
-页面向下滚动即可看到 **「我的项目」**（先出现骨架屏，再加载为卡片）；侧栏 **「探索更多 → 我的项目」** 会平滑滚动到该区域。
+页面向下滚动即可看到 **「我的项目」**（先出现骨架屏，再加载为卡片）与 **「留言板」**；侧栏 **「探索更多 → 我的项目 / 给我留言」** 会平滑滚动到对应区域。
 
 > **注意**：直接双击 `index.html`（`file://`）时，跨域限制可能导致项目列表无法加载；联调请优先使用 `http.server 5500`。
 
@@ -136,13 +141,16 @@ python -m http.server 5500
 
 ## 前后端联动
 
-1. 浏览器打开 `http://127.0.0.1:5500/`，执行 `script.js` 中的 `loadProjectsFromApi()`。
+1. 浏览器打开 `http://127.0.0.1:5500/`，执行 `script.js` 中的 `loadProjectsFromApi()` 与 `loadMessagesFromApi()`。
 2. **加载态**：`#projects-grid` 先插入 2～4 个骨架卡片（`aria-busy="true"`）。
 3. 请求 `GET {API_BASE}/api/projects`；后端读取并 Pydantic 校验 `projects.json`。
 4. 返回 JSON 数组后，清空骨架并在 `#projects-grid` 内动态生成真实卡片（标题、简介、标签、年份、`id`、外链等）；失败或空数组则显示对应提示文案。
-5. 修改展示内容：编辑 `api/data/projects.json` 后保存并刷新浏览器即可（后端 `--reload` 会重载进程；数据须符合 `schemas.py` 字段规则）。
+5. 留言板请求 `GET {API_BASE}/api/messages`，提交表单时请求 `POST {API_BASE}/api/messages`，后端写入 `api/data/messages.db` 后返回新留言。
+6. 修改项目展示内容：编辑 `api/data/projects.json` 后保存并刷新浏览器即可（后端 `--reload` 会重载进程；数据须符合 `schemas.py` 字段规则）。
 
 若更换前端端口或 API 地址：同步修改 **`aurora-site/script.js` 顶部的 `API_BASE`**，并在 **`api/main.py` 的 `allow_origins`** 中加入对应来源。
+
+服务器第一版部署目标：前端通过 `http://124.222.53.145` 访问时，`script.js` 会自动请求 `http://124.222.53.145:8000`。请在服务器开放后端端口，或后续用 Nginx 将 `/api` 反代到 FastAPI 后再把前端改为相对路径。
 
 ---
 
@@ -153,6 +161,8 @@ python -m http.server 5500
 | `GET` | `/api/health` | 返回服务是否正常 |
 | `GET` | `/api/projects` | 返回 `data/projects.json` 中的项目数组 |
 | `GET` | `/api/projects/{project_id}` | 按 `id` 返回单条；不存在则 `404` |
+| `GET` | `/api/messages` | 返回最近 50 条留言，按时间倒序 |
+| `POST` | `/api/messages` | 新增留言；请求体为 `name` 与 `content` |
 
 ---
 
@@ -168,6 +178,27 @@ python -m http.server 5500
 | `tags` | 字符串数组 | 必填；每项为非空字符串 | 标签列表，可为 `[]` |
 | `link` | 字符串 | 可选；默认 `""`；非空时必须以 `http://` 或 `https://` 开头 | 前端仅在有合法外链时显示「查看链接」 |
 | `year` | 整数 | 可选；2000～2100 | 显示在卡片元信息区 |
+
+---
+
+## 留言板字段约定
+
+留言数据保存在 `api/data/messages.db`，该文件由后端首次启动时自动创建，并已通过 `.gitignore` 排除，不会提交到 GitHub。
+
+| 字段 | 类型 | 校验规则 | 说明 |
+|------|------|----------|------|
+| `id` | 整数 | 自动生成 | 留言唯一 ID |
+| `name` | 字符串 | 必填；1～20 字符；自动去除首尾空格 | 公开展示的昵称 |
+| `content` | 字符串 | 必填；1～300 字符；自动去除首尾空格 | 公开展示的留言内容 |
+| `created_at` | 字符串 | 后端生成 ISO 时间 | 前端按本地时间格式化展示 |
+
+接口示例：
+
+```powershell
+curl -X POST http://127.0.0.1:8000/api/messages `
+  -H "Content-Type: application/json" `
+  -d "{\"name\":\"Aurora\",\"content\":\"欢迎来到留言板。\"}"
+```
 
 ---
 
@@ -190,6 +221,8 @@ python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 **项目区无法加载 / 控制台 `fetch` 失败** — 检查后端是否在 `127.0.0.1:8000` 运行；前端是否通过 `http://127.0.0.1:5500` 访问；防火墙是否拦截本地请求。
 
+**留言提交失败** — 检查昵称是否超过 20 字、留言是否超过 300 字；确认后端端口已开放，`allow_origins` 包含当前前端地址。
+
 **CORS 错误** — 确认 `allow_origins` 包含当前页面的协议 + 主机 + 端口，并与 `API_BASE` 一致。
 
 **接口返回 500 / 项目区无法加载** — 打开 <http://127.0.0.1:8000/docs> 试调 `GET /api/projects`，查看 `detail.errors` 中指明的条目 index 与字段；常见原因：缺少必填字段、`id` 含大写或空格、`year` 写成字符串、两条记录 `id` 相同。
@@ -200,8 +233,8 @@ python -m uvicorn main:app --reload --host 127.0.0.1 --port 8000
 
 ## 后续可扩展方向
 
-- 将 `projects.json` 换为 SQLite / PostgreSQL
-- 新增留言、访问量等 `POST` 接口，并做鉴权或限流
+- 将留言板增加审核、删除、限流或验证码
+- 为 GitHub Pages 入口配置 HTTPS 后端域名，避免浏览器拦截 HTTP API
 - 生产部署：前端静态托管（GitHub Pages 等）+ 后端独立服务，或用 Nginx 同域反代 `/api`
 
 ---

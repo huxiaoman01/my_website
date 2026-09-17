@@ -1,6 +1,14 @@
-// 本地开发：与 api/main.py 中 CORS 一致（前端建议用 python -m http.server 5500）
-const API_BASE = 'http://127.0.0.1:8000';
+// 本地开发默认请求 127.0.0.1；部署到服务器 IP 时请求同一台服务器的 8000 端口。
+const API_BASE = getApiBase();
 const MIN_SKELETON_MS = 300;
+
+function getApiBase() {
+    const host = window.location.hostname;
+    if (host === '124.222.53.145') {
+        return `${window.location.protocol}//124.222.53.145:8000`;
+    }
+    return 'http://127.0.0.1:8000';
+}
 
 // 等待DOM完全加载
 document.addEventListener('DOMContentLoaded', function() {
@@ -25,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 7. 从 FastAPI 加载项目列表并渲染
     loadProjectsFromApi();
+
+    // 8. 初始化留言板
+    setupGuestbook();
 });
 
 // 创建星空背景
@@ -235,12 +246,15 @@ function addButtonInteractions() {
         });
     }
     
-    // 为联系按钮添加平滑滚动（占位功能）
+    // 为「给我留言」按钮：平滑滚动到 #guestbook
     const contactBtn = document.querySelector('.contact-btn');
     if (contactBtn && contactBtn.tagName === 'A') {
         contactBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            alert('联系方式：请通过微信或邮箱联系我！');
+            const el = document.getElementById('guestbook');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
     }
 }
@@ -397,6 +411,182 @@ function createProjectCard(item) {
     }
 
     return card;
+}
+
+function setupGuestbook() {
+    const form = document.getElementById('message-form');
+    if (!form) return;
+
+    form.addEventListener('submit', handleMessageSubmit);
+    loadMessagesFromApi();
+}
+
+async function loadMessagesFromApi() {
+    const list = document.getElementById('messages-list');
+    const status = document.getElementById('messages-status');
+    if (!list || !status) return;
+
+    list.setAttribute('aria-busy', 'true');
+    status.className = 'messages-status';
+    status.textContent = '正在加载留言...';
+
+    try {
+        const res = await fetch(`${API_BASE}/api/messages`);
+        if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        if (!Array.isArray(data)) {
+            throw new Error('返回数据不是数组');
+        }
+
+        list.textContent = '';
+        list.setAttribute('aria-busy', 'false');
+
+        if (data.length === 0) {
+            status.textContent = '还没有留言，欢迎写下第一条。';
+            return;
+        }
+
+        status.textContent = '';
+        const frag = document.createDocumentFragment();
+        data.forEach(function(message) {
+            frag.appendChild(createMessageCard(message));
+        });
+        list.appendChild(frag);
+    } catch (err) {
+        console.error('加载留言失败:', err);
+        list.textContent = '';
+        list.setAttribute('aria-busy', 'false');
+        status.className = 'messages-status messages-status--error';
+        status.textContent =
+            '无法加载留言。请确认后端已启动，且 API 地址、端口和 CORS 配置一致。';
+    }
+}
+
+async function handleMessageSubmit(e) {
+    e.preventDefault();
+
+    const form = e.currentTarget;
+    const nameInput = document.getElementById('message-name');
+    const contentInput = document.getElementById('message-content');
+    const status = document.getElementById('messages-status');
+    const submitBtn = form.querySelector('.message-submit');
+
+    const name = nameInput.value.trim();
+    const content = contentInput.value.trim();
+
+    if (!name || !content) {
+        setMessageStatus('昵称和留言内容都要填写。', true);
+        return;
+    }
+    if (name.length > 20) {
+        setMessageStatus('昵称最多 20 个字。', true);
+        return;
+    }
+    if (content.length > 300) {
+        setMessageStatus('留言最多 300 个字。', true);
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>发布中...</span>';
+    if (status) {
+        status.className = 'messages-status';
+        status.textContent = '';
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/api/messages`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, content }),
+        });
+
+        if (!res.ok) {
+            const detail = await readErrorDetail(res);
+            throw new Error(detail || `HTTP ${res.status}`);
+        }
+
+        form.reset();
+        setMessageStatus('留言已发布，谢谢你的小纸条。', false);
+        await loadMessagesFromApi();
+    } catch (err) {
+        console.error('提交留言失败:', err);
+        setMessageStatus(`发布失败：${err.message}`, true);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>发布留言</span>';
+    }
+}
+
+function createMessageCard(message) {
+    const article = document.createElement('article');
+    article.className = 'message-card';
+
+    const header = document.createElement('div');
+    header.className = 'message-card__header';
+
+    const name = document.createElement('strong');
+    name.className = 'message-card__name';
+    name.textContent = message.name || '匿名访客';
+    header.appendChild(name);
+
+    const time = document.createElement('time');
+    time.className = 'message-card__time';
+    time.dateTime = message.created_at || '';
+    time.textContent = formatMessageTime(message.created_at);
+    header.appendChild(time);
+
+    const content = document.createElement('p');
+    content.className = 'message-card__content';
+    content.textContent = message.content || '';
+
+    article.appendChild(header);
+    article.appendChild(content);
+    return article;
+}
+
+function formatMessageTime(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return '';
+    }
+    return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
+function setMessageStatus(text, isError) {
+    const status = document.getElementById('messages-status');
+    if (!status) return;
+
+    status.className = isError
+        ? 'messages-status messages-status--error'
+        : 'messages-status messages-status--success';
+    status.textContent = text;
+}
+
+async function readErrorDetail(res) {
+    try {
+        const body = await res.json();
+        if (typeof body.detail === 'string') {
+            return body.detail;
+        }
+        if (Array.isArray(body.detail)) {
+            return '请检查昵称和留言长度。';
+        }
+    } catch (err) {
+        return '';
+    }
+    return '';
 }
 
 // 主题切换功能

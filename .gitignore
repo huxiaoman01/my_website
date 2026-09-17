@@ -1,5 +1,7 @@
 # Python
 api/.venv/
+api/data/*.db
+api/data/*.db-*
 __pycache__/
 *.py[cod]
 *.pyo

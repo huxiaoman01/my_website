@@ -102,6 +102,32 @@
                     <p class="projects-api-note">以下卡片由后端接口加载；本地需同时运行前端（如端口 5500）与 API（端口 8000）。</p>
                     <div class="projects-grid" id="projects-grid" aria-live="polite" aria-busy="true"></div>
                 </section>
+
+                <!-- 留言板：数据来自 FastAPI + SQLite -->
+                <section class="guestbook-section" id="guestbook">
+                    <h3 class="section-title">
+                        <i class="fas fa-comments"></i> 留言板
+                    </h3>
+                    <form class="message-form" id="message-form">
+                        <label class="form-field">
+                            <span>昵称</span>
+                            <input type="text" id="message-name" name="name" maxlength="20" placeholder="留下你的名字" required>
+                        </label>
+                        <label class="form-field">
+                            <span>留言</span>
+                            <textarea id="message-content" name="content" maxlength="300" rows="4" placeholder="写点想说的话吧" required></textarea>
+                        </label>
+                        <div class="message-form__footer">
+                            <p class="message-hint">留言会立即公开展示，请勿填写手机号、邮箱等隐私信息。</p>
+                            <button type="submit" class="message-submit">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>发布留言</span>
+                            </button>
+                        </div>
+                    </form>
+                    <p class="messages-status" id="messages-status" aria-live="polite"></p>
+                    <div class="messages-list" id="messages-list" aria-live="polite" aria-busy="true"></div>
+                </section>
                 
                 <!-- 功能按钮 -->
                 <section class="action-buttons">
@@ -117,9 +143,9 @@
                             <i class="fas fa-code-branch"></i>
                             <span>我的项目</span>
                         </a>
-                        <a href="#contact" class="action-btn contact-btn">
-                            <i class="fas fa-paper-plane"></i>
-                            <span>联系我</span>
+                        <a href="#guestbook" class="action-btn contact-btn">
+                            <i class="fas fa-comments"></i>
+                            <span>给我留言</span>
                         </a>
                         <button class="action-btn fun-btn" id="meteor-btn">
                             <i class="fas fa-meteor"></i>
@@ -135,8 +161,8 @@
                     </h3>
                     <div class="updates-content">
                         <p>🚀 项目列表已接入 FastAPI，改 <code>api/data/projects.json</code> 即可更新展示。</p>
-                        <p>💫 后端未启动时，项目区会显示友好提示，其余页面照常使用。</p>
-                        <p>✨ 主题切换已可用；更多接口与数据表可逐步扩展。</p>
+                        <p>💫 留言板已接入 SQLite，刷新页面后留言仍会保留。</p>
+                        <p>✨ 后端未启动时，项目区和留言区会显示友好提示，其余页面照常使用。</p>
                     </div>
                 </section>
             </div>
