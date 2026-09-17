@@ -17,6 +17,8 @@
     </div>
     <!-- 星空背景容器 -->
     <div id="stars-container"></div>
+    <!-- 前景特效层：光标粒子与亮色主题的泡泡（不接收鼠标事件） -->
+    <div id="fx-layer" aria-hidden="true"></div>
     
     <!-- 主容器 -->
     <main class="container">
@@ -53,13 +55,6 @@
                         <i class="fas fa-camera"></i>
                     </a>
                 </div>
-                
-                <!-- 简短介绍 -->
-                <div class="short-bio">
-                    <p>信息管理专业大二学生</p>
-                    <p>热爱数据、代码与理性思考</p>
-                    <p>在专注与探索中持续成长</p>
-                </div>
             </div>
         </section>
         
@@ -72,7 +67,7 @@
                         <i class="fas fa-user-astronaut"></i> 关于我
                     </h3>
                     <div class="about-content">
-                        <p>我是一名就读于信息管理专业的大二学生，偏向安静内敛，做事认真细致，习惯理性思考与踏实前行。热爱数据与代码，深耕数据分析与 web 相关学习，积极参与科创竞赛与实践探索，在不断尝试中沉淀成长。</p>
+                        <p>我是一名就读于信息管理专业的大三学生，偏向安静内敛，做事认真细致，习惯理性思考与踏实前行。热爱数据和产品，深耕数据分析与 web 相关学习，积极参与科创竞赛与实践探索，在不断尝试中沉淀成长。</p>
                         <p>一面专注学业与未来规划，一面热爱生活、喜欢奔赴山海，在理性的专业之外，保留温柔的浪漫与热爱。慢慢进步，持续发光，认真奔赴属于自己的前路。</p>
                     </div>
                 </section>
@@ -84,7 +79,7 @@
                     </h3>
                     <div class="skills-container">
                         <span class="skill-tag">Python数据分析</span>
-                        <span class="skill-tag">Web前端开发</span>
+                        <span class="skill-tag">产品运营</span>
                         <span class="skill-tag">数据库管理</span>
                         <span class="skill-tag">信息检索</span>
                         <span class="skill-tag">项目管理</span>
@@ -99,7 +94,6 @@
                     <h3 class="section-title">
                         <i class="fas fa-code-branch"></i> 我的项目
                     </h3>
-                    <p class="projects-api-note">以下卡片由同源接口 <code>/api/projects</code> 加载：在 <code>api</code> 目录运行 uvicorn 后访问 <code>http://127.0.0.1:8000/</code> 即可。</p>
                     <div class="projects-grid" id="projects-grid" aria-live="polite" aria-busy="true"></div>
                 </section>
 

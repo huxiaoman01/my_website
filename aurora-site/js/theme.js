@@ -1,7 +1,5 @@
 /** 主题切换：localStorage 持久化偏好，未手动选择时跟随系统主题。 */
 
-import { applyStarTheme } from './stars.js';
-
 const STORAGE_KEY = 'theme';
 
 export class ThemeManager {
@@ -40,11 +38,14 @@ export class ThemeManager {
             this.sunIcon.style.display = isLight ? 'block' : 'none';
         }
 
-        applyStarTheme(this.current);
-
         if (persist) {
             localStorage.setItem(STORAGE_KEY, this.current);
         }
+
+        // 通知其它模块（例如「小惊喜」按钮）主题已变化
+        document.dispatchEvent(
+            new CustomEvent('aurora:themechange', { detail: { theme: this.current } }),
+        );
     }
 
     toggleTheme() {

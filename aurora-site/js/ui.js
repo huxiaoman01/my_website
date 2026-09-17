@@ -1,8 +1,11 @@
 /** 页面交互：打字机、微信弹层、技能标签悬停、按钮反馈与流星雨按钮。 */
 
+import { triggerBubbleBurst } from './bubbles.js';
 import { prefersReducedMotion, triggerMeteorShower } from './stars.js';
 
-/** 昵称逐字输出，完成后接一个闪烁光标。 */
+const SURPRISE_TEXT = { dark: '流星雨发射！', light: '泡泡升空！' };
+
+/** 昵称逐字输出。 */
 export function typeWriterEffect(elementId = 'typewriter', speed = 150) {
     const nicknameElement = document.getElementById(elementId);
     if (!nicknameElement) return;
@@ -22,40 +25,11 @@ export function typeWriterEffect(elementId = 'typewriter', speed = 150) {
             nicknameElement.textContent += text.charAt(index);
             index += 1;
             setTimeout(typeWriter, speed);
-        } else {
-            addCursorBlink(nicknameElement);
         }
     }
 
     // 延迟开始打字效果
     setTimeout(typeWriter, 500);
-}
-
-function addCursorBlink(nicknameElement) {
-    const cursor = document.createElement('span');
-    cursor.classList.add('cursor');
-    cursor.textContent = '|';
-
-    if (!prefersReducedMotion()) {
-        cursor.style.animation = 'blink 1s infinite';
-        ensureBlinkKeyframes();
-    }
-
-    nicknameElement.appendChild(cursor);
-}
-
-function ensureBlinkKeyframes() {
-    if (document.getElementById('cursor-blink-keyframes')) return;
-
-    const style = document.createElement('style');
-    style.id = 'cursor-blink-keyframes';
-    style.textContent = `
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-    `;
-    document.head.appendChild(style);
 }
 
 /** 微信二维码弹层：点击按钮打开，点击关闭按钮或遮罩关闭。 */
@@ -84,21 +58,50 @@ export function setupWechatModal(buttonId = 'wechat-btn', modalId = 'wechat-moda
     });
 }
 
-/** 「小惊喜」按钮：发射流星雨并给出按钮反馈。 */
+/**
+ * 「小惊喜」按钮：暗色主题下发射流星雨，亮色主题下升起泡泡。
+ * 高亮态交给 CSS 的 .is-active 处理，避免写死颜色在亮色主题下变成黑底黑字。
+ */
 export function setupMeteorButton(buttonId = 'meteor-btn') {
-    const meteorBtn = document.getElementById(buttonId);
-    if (!meteorBtn) return;
+    const button = document.getElementById(buttonId);
+    if (!button) return;
 
-    meteorBtn.addEventListener('click', () => {
-        triggerMeteorShower();
+    const currentTheme = () => (document.body.classList.contains('light-theme') ? 'light' : 'dark');
 
-        meteorBtn.innerHTML = '<i class="fas fa-meteor"></i><span>流星雨发射！</span>';
-        meteorBtn.style.background = 'linear-gradient(135deg, #9d4edd, #4a6fa5)';
+    const render = (text) => {
+        const theme = currentTheme();
+        // 亮色主题用纯 CSS 画的气泡图标，避免依赖免费版 Font Awesome 里没有的图标
+        const icon = theme === 'light'
+            ? '<i class="fx-bubble-icon" aria-hidden="true"></i>'
+            : '<i class="fas fa-meteor"></i>';
+        button.innerHTML = `${icon}<span>${text}</span>`;
+    };
+
+    render('小惊喜');
+    document.addEventListener('aurora:themechange', () => {
+        if (!button.classList.contains('is-active')) {
+            render('小惊喜');
+        }
+    });
+
+    button.addEventListener('click', () => {
+        const theme = currentTheme();
+
+        if (!prefersReducedMotion()) {
+            if (theme === 'light') {
+                triggerBubbleBurst();
+            } else {
+                triggerMeteorShower();
+            }
+        }
+
+        button.classList.add('is-active');
+        render(SURPRISE_TEXT[theme]);
 
         setTimeout(() => {
-            meteorBtn.innerHTML = '<i class="fas fa-meteor"></i><span>小惊喜</span>';
-            meteorBtn.style.background = 'linear-gradient(135deg, #0a0a0f, #2a2a3a)';
-        }, 2000);
+            button.classList.remove('is-active');
+            render('小惊喜');
+        }, 2200);
     });
 }
 

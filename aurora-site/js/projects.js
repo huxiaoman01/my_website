@@ -140,14 +140,15 @@ function createProjectCard(item) {
     meta.textContent = [year, idStr].filter(Boolean).join(' · ');
     card.appendChild(meta);
 
-    const link = item.link;
-    if (typeof link === 'string' && link.trim().startsWith('http')) {
+    const link = typeof item.link === 'string' ? item.link.trim() : '';
+    if (link) {
+        const isExternal = link.startsWith('http://') || link.startsWith('https://');
         const a = document.createElement('a');
-        a.href = link.trim();
+        a.href = link;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         a.className = 'project-card__link';
-        a.textContent = '查看链接';
+        a.textContent = isExternal ? '查看链接' : '查看成果';
         card.appendChild(a);
     }
 
