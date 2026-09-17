@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aurora's World | 个人网站</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
 </head>
 <body id="top">
     <!-- 在body开始处添加主题切换按钮 -->
@@ -99,7 +99,7 @@
                     <h3 class="section-title">
                         <i class="fas fa-code-branch"></i> 我的项目
                     </h3>
-                    <p class="projects-api-note">以下卡片由后端接口加载；本地需同时运行前端（如端口 5500）与 API（端口 8000）。</p>
+                    <p class="projects-api-note">以下卡片由同源接口 <code>/api/projects</code> 加载：在 <code>api</code> 目录运行 uvicorn 后访问 <code>http://127.0.0.1:8000/</code> 即可。</p>
                     <div class="projects-grid" id="projects-grid" aria-live="polite" aria-busy="true"></div>
                 </section>
 
@@ -162,7 +162,7 @@
                     <div class="updates-content">
                         <p>🚀 项目列表已接入 FastAPI，改 <code>api/data/projects.json</code> 即可更新展示。</p>
                         <p>💫 留言板已接入 SQLite，刷新页面后留言仍会保留。</p>
-                        <p>✨ 后端未启动时，项目区和留言区会显示友好提示，其余页面照常使用。</p>
+                        <p>✨ 页面与接口同源（<code>/api</code>），本地一条命令即可同时跑起前后端。</p>
                     </div>
                 </section>
             </div>
@@ -186,14 +186,12 @@
         <div class="footer-content">
             <p>© 2026 Aurora's World 在星空中探索，在代码中创造。</p>
             <p class="footer-links">
-                <a href="#">隐私政策</a> · 
-                <a href="#">使用条款</a> · 
                 <a href="#top">返回顶部</a>
             </p>
         </div>
     </footer>
     
     <!-- JavaScript -->
-    <script src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
