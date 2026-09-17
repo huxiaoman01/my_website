@@ -1,12 +1,20 @@
 # Python
-api/.venv/
-api/data/*.db
-api/data/*.db-*
+**/.venv/
 __pycache__/
 *.py[cod]
 *.pyo
+api/data/*.db
+api/data/*.db-*
+
+# 测试与缓存
+.pytest_cache/
+.coverage
+
+# 归档 / 临时产物
+*.tar
+*.zip
+*.backup
 
 # OS / editor
 .DS_Store
 Thumbs.db
-*.backup
