@@ -1654,6 +1654,151 @@ body::after {
     }
 }
 
+/* ===== 简历门禁页 ===== */
+.gate-error {
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border-left: 3px solid #f56565;
+    border-radius: 8px;
+    background: rgba(245, 101, 101, 0.08);
+    color: #f56565;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.light-theme .gate-error {
+    color: #c53030;
+}
+
+.gate-unlock {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-color);
+}
+
+.gate-unlock summary {
+    cursor: pointer;
+    color: var(--accent-primary);
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+}
+
+.gate-unlock summary:hover {
+    color: var(--accent-secondary);
+}
+
+/* ===== 申请管理后台 ===== */
+.admin-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0 18px;
+}
+
+.admin-count {
+    flex: 1;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.admin-list {
+    display: grid;
+    gap: 14px;
+}
+
+.admin-item {
+    background: var(--card-hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 16px 18px;
+    transition: border-color var(--transition-time);
+}
+
+.admin-item:hover {
+    border-color: var(--border-accent);
+}
+
+.admin-item__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.admin-item__head strong {
+    color: var(--text-primary);
+}
+
+.admin-item__time {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.admin-item__line {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.admin-item__label {
+    color: var(--accent-primary);
+}
+
+.admin-item__meta {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.admin-badge {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.admin-badge--pending {
+    color: #d69e2e;
+    border-color: rgba(214, 158, 46, 0.5);
+}
+
+.admin-badge--approved {
+    color: #38a169;
+    border-color: rgba(56, 161, 105, 0.5);
+}
+
+.admin-badge--rejected {
+    color: #e53e3e;
+    border-color: rgba(229, 62, 62, 0.5);
+}
+
+.light-theme .admin-badge--pending {
+    color: #975a16;
+}
+
+.light-theme .admin-badge--approved {
+    color: #276749;
+}
+
+.light-theme .admin-badge--rejected {
+    color: #9b2c2c;
+}
+
+.admin-item__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.admin-item__actions .detail-action {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+}
+
 /* ===== 小游戏大厅（俄罗斯方块 / 扫雷 / 2048） ===== */
 :root {
     /* 棋盘网格与底板：与卡片同色系，比卡片稍深一点，保证方块颜色突出 */

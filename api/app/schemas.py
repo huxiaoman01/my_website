@@ -21,6 +21,13 @@ def _clean_link(value: str) -> str:
     return trimmed
 
 
+def _strip_required(value: str) -> str:
+    trimmed = value.strip()
+    if not trimmed:
+        raise ValueError("field cannot be empty")
+    return trimmed
+
+
 class Project(BaseModel):
     id: Annotated[str, Field(min_length=1, pattern=_ID_PATTERN.pattern)]
     title: Annotated[str, Field(min_length=1, max_length=80)]
@@ -103,12 +110,53 @@ class MessageCreate(BaseModel):
     @field_validator("name", "content")
     @classmethod
     def strip_required_text(cls, value: str) -> str:
-        trimmed = value.strip()
-        if not trimmed:
-            raise ValueError("field cannot be empty")
-        return trimmed
+        return _strip_required(value)
 
 
 class Message(MessageCreate):
     id: int
     created_at: datetime
+
+
+class ResumeRequestCreate(BaseModel):
+    """简历访问申请：只收集判断来人身份所需的最少信息。"""
+
+    name: Annotated[str, Field(min_length=1, max_length=20)]
+    contact: Annotated[str, Field(min_length=1, max_length=80)]
+    purpose: Annotated[str, Field(min_length=1, max_length=200)]
+
+    @field_validator("name", "contact", "purpose")
+    @classmethod
+    def strip_required_text(cls, value: str) -> str:
+        return _strip_required(value)
+
+
+class ResumeRequest(BaseModel):
+    """管理后台看到的申请记录（含访问码状态）。"""
+
+    id: int
+    name: str
+    contact: str
+    purpose: str
+    status: str
+    created_at: datetime
+    reviewed_at: datetime | None = None
+    code: str | None = None
+    expires_at: datetime | None = None
+    revoked_at: datetime | None = None
+    last_used_at: datetime | None = None
+    use_count: int = 0
+
+
+class ResumeRequestAccepted(BaseModel):
+    id: int
+    status: str
+    message: str
+
+
+class ResumeUnlock(BaseModel):
+    code: Annotated[str, Field(min_length=4, max_length=32)]
+
+
+class AdminLogin(BaseModel):
+    token: Annotated[str, Field(min_length=1, max_length=200)]

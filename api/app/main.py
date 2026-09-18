@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .core.config import Settings
-from .routers import messages, projects
+from .routers import admin, messages, projects, resume
 
 
 class DevStaticFiles(StaticFiles):
@@ -67,6 +67,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(projects.router)
     app.include_router(messages.router)
+    app.include_router(resume.router)
+    app.include_router(admin.router)
 
     @app.get("/api/health", tags=["health"], summary="健康检查")
     def health() -> dict[str, object]:

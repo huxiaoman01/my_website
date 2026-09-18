@@ -16,6 +16,7 @@
 | 访问站点 / 接口文档 | http://127.0.0.1:8000/ 、http://127.0.0.1:8000/docs |
 | 运行测试 | `cd api` 后 `python -m pytest` |
 | 安装依赖 | `pip install -r requirements.txt`；跑测试再装 `requirements-dev.txt` |
+| 打开简历申请后台 | 本机执行 `.\deploy\admin-tunnel.ps1`（建立 SSH 隧道并打开浏览器），用完 `-Stop` 关闭 |
 | 同步到服务器 | 服务器上 `cd /home/ubuntu/my_website && git pull --ff-only`，仅当改动在 `api/` 下才需要 `sudo systemctl restart aurora-api` |
 
 Windows 下用 `api\.venv\Scripts\python.exe` 调用；`pytest` 需要写系统临时目录，若报 `PermissionError` 请在普通终端（非受限沙箱）中运行。
@@ -35,7 +36,7 @@ Windows 下用 `api\.venv\Scripts\python.exe` 调用；`pytest` 需要写系统�
 
 ## 前端
 
-- 模块职责固定：`main.js`（首页装配）/ `subpage.js`（子页面装配）只做装配；`api.js` 负责请求与错误解析；`stars.js`（星空与流星）/ `bubbles.js`（亮色泡泡）/ `cursor.js`（光标粒子）/ `reveal.js`（滚动进场与阅读进度条）/ `theme.js` / `projects.js`（首页卡片）/ `project-detail.js`（详情页渲染）/ `guestbook.js` / `ui.js` 各管一块。模块之间只通过 `export` 通信，禁止跨模块查询对方 DOM。
+- 模块职责固定：`main.js`（首页装配）/ `subpage.js`（子页面装配）只做装配；`api.js` 负责请求与错误解析；`stars.js`（星空与流星）/ `bubbles.js`（亮色泡泡）/ `cursor.js`（光标粒子）/ `reveal.js`（滚动进场与阅读进度条）/ `theme.js` / `projects.js`（首页卡片）/ `project-detail.js`（详情页渲染）/ `gate.js`（简历门禁）/ `admin.js`（申请管理后台）/ `guestbook.js` / `ui.js` 各管一块。模块之间只通过 `export` 通信，禁止跨模块查询对方 DOM。
 - 页面结构：`index.html`（首页）、`project.html`（详情页，读取 `?id=`）、`resume.html`（在线简历，可打印且不放手机号）。子页面不加载光标粒子、流星雨与留言板。
 - 特效分主题：暗色是星空 + 流星雨 + 跟随光标的星尘，亮色是淡蓝天空 + 泡泡 + 跟随光标的花瓣。新增动效要走 `#fx-layer` 或 `#stars-container`，并保持 `pointer-events: none` 与 `prefers-reduced-motion` 降级。
 - 滚动进场动画由 `reveal.js` 统一接管：动效目标按选择器收集（不要写进 HTML），只在 `<html>` 带 `reveal-ready` 时隐藏元素，因此无 JS 或减少动效时内容始终可见；新增可滚动区块时把选择器加进 `reveal.js` 的 `TARGET_SELECTOR` 即可。
@@ -49,6 +50,8 @@ Windows 下用 `api\.venv\Scripts\python.exe` 调用；`pytest` 需要写系统�
 - 不要重新添加根目录的资源副本（头像、二维码、旧 `style.css`）、`*.backup` 或 `deploy.tar`；静态资源只放 `aurora-site/assets/`。
 - 不提交虚拟环境、`__pycache__`、数据库文件与任何密钥（`.gitignore` 已覆盖，仍要留意）。
 - Nginx 中屏蔽 `.git`、`/deploy/`、`README.md` 的 deny 规则是刻意加的，不要删除。
+- `private/` 存放受保护的简历 HTML 与 PDF，**已被 .gitignore 忽略**：简历更新走"本地上传服务器"，不要 `git add -f`；仓库历史里仍有旧版，这是已知情况。
+- `/admin.html` 与 `/api/admin/*` 在 Nginx 上只对本机开放（公网 403），管理后台必须通过 SSH 隧道访问；`/resume.html` 与 `/assets/pdf/resume.pdf` 由后端鉴权后返回，不要在 Nginx 里改回静态托管。
 
 ## 文档与提交
 

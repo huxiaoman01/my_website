@@ -81,7 +81,7 @@ my_website/
 ├── aurora-site/              # 前端（纯静态，ES modules）
 │   ├── index.html            # 首页：项目展示区、留言板与动效入口
 │   ├── project.html          # 项目详情页（读取 ?id= 渲染）
-│   ├── resume.html           # 在线简历页（可打印）
+│   ├── resume-gate.html      # 简历访问申请页（未授权时展示）
 │   ├── games.html            # 游戏大厅：俄罗斯方块 / 扫雷 / 2048
 │   ├── css/style.css         # 主题变量、动效、响应式、项目卡片与骨架屏样式
 │   ├── js/
@@ -261,6 +261,26 @@ CI：`.github/workflows/ci.yml` 在 push 与 PR 时自动安装依赖并运行 `
 4. 返回 JSON 数组后，清空骨架并在 `#projects-grid` 内动态生成真实卡片（标题、简介、标签、年份、`id`、外链等）；失败或空数组则显示对应提示文案。
 5. 留言板请求 `GET /api/messages`，提交表单时请求 `POST /api/messages`，后端写入 `api/data/messages.db` 后返回新留言。
 6. 修改项目展示内容：编辑 `api/data/projects.json` 后保存并刷新浏览器即可（数据须符合 `schemas.py` 字段规则）。
+
+---
+
+## 简历授权（申请制）
+
+简历不在公开页面里：访客需要先申请、由站主审核通过后才能查看。
+
+1. 访客打开 `/resume.html`（或点首页「查看简历」），未授权时看到的是**申请页**：填写称呼、联系方式与用途。
+2. 你在管理后台点「通过」，系统生成 8 位访问码，并给出专属链接 `http://<站点>/resume.html?code=XXXXXXXX`。
+3. 把链接或访问码发给对方：打开链接会自动解锁，也可以在申请页下方手动输入访问码。
+4. 访问码默认 30 天有效，可随时撤销，撤销后立即失效；简历 HTML 与 PDF 受同一套鉴权保护（未授权时 PDF 返回 403）。
+
+**管理后台只在服务器本机可用**（公网访问 `/admin.html` 与 `/api/admin/*` 一律 403），用仓库里的脚本建立 SSH 隧道打开：
+
+```powershell
+.\deploy\admin-tunnel.ps1          # 建立隧道并自动打开浏览器
+.\deploy\admin-tunnel.ps1 -Stop    # 用完关闭隧道
+```
+
+管理口令存放在服务器的 `/etc/aurora-api.env`（`AURORA_ADMIN_TOKEN`），登录后 12 小时有效；连续输错 5 次锁定 30 分钟。
 
 ---
 

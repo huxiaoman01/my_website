@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历申请管理 | Aurora's World</title>
+    <script>
+        // 先于首帧应用主题，避免页面跳转时闪一下深色
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                }
+            } catch (err) {
+                /* 隐私模式下访问 localStorage 会抛错，忽略即可 */
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+</head>
+<body class="subpage admin-page">
+    <div id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun" style="display: none;"></i>
+    </div>
+    <div id="stars-container"></div>
+
+    <header class="subpage-header">
+        <a class="back-link" href="index.html">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回首页</span>
+        </a>
+    </header>
+
+    <main class="subpage-container">
+        <article class="resume-card">
+            <h1 class="detail-title">简历申请管理</h1>
+            <p class="detail-summary">
+                本页面只在服务器本机（SSH 隧道）可访问。登录口令存放在服务器的
+                <code>/etc/aurora-api.env</code> 中。
+            </p>
+
+            <form class="message-form" id="admin-login-form">
+                <label class="form-field">
+                    <span>管理员口令</span>
+                    <input type="password" id="admin-token" autocomplete="current-password" required>
+                </label>
+                <button type="submit" class="message-submit">
+                    <i class="fas fa-right-to-bracket"></i>
+                    <span>登录</span>
+                </button>
+            </form>
+            <p class="messages-status" id="admin-status" aria-live="polite"></p>
+
+            <section id="admin-panel" hidden>
+                <div class="admin-toolbar">
+                    <span id="admin-count" class="admin-count"></span>
+                    <button type="button" class="detail-action detail-action--ghost" id="admin-refresh">
+                        <i class="fas fa-rotate"></i>
+                        <span>刷新</span>
+                    </button>
+                    <button type="button" class="detail-action detail-action--ghost" id="admin-logout">
+                        <i class="fas fa-right-from-bracket"></i>
+                        <span>退出登录</span>
+                    </button>
+                </div>
+                <div id="admin-list" class="admin-list" aria-live="polite"></div>
+            </section>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2026 Aurora's World 在星空中探索，在代码中创造。</p>
+        </div>
+    </footer>
+
+    <!-- 对外可用的站点地址：生成给访客的专属链接时使用（隧道地址不能发出去） -->
+    <script>
+        window.AURORA_PUBLIC_ORIGIN = 'http://124.222.53.145';
+    </script>
+    <script type="module" src="js/subpage.js"></script>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>

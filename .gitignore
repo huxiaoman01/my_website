@@ -15,6 +15,9 @@ api/data/*.db-*
 *.zip
 *.backup
 
+# 受保护内容：简历只保留在本机与服务器，不进入仓库
+private/
+
 # OS / editor
 .DS_Store
 Thumbs.db

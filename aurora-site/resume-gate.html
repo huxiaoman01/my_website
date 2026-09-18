@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简历访问申请 | Aurora's World</title>
+    <script>
+        // 先于首帧应用主题，避免页面跳转时闪一下深色
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                }
+            } catch (err) {
+                /* 隐私模式下访问 localStorage 会抛错，忽略即可 */
+            }
+
+            // 支持 IntersectionObserver 且未开启「减少动效」时才启用进场动画；否则内容始终可见
+            if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.documentElement.classList.add('reveal-ready');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+</head>
+<body class="subpage">
+    <div id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun" style="display: none;"></i>
+    </div>
+    <div id="stars-container"></div>
+
+    <header class="subpage-header">
+        <a class="back-link" href="index.html">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回首页</span>
+        </a>
+    </header>
+
+    <main class="subpage-container">
+        <article class="resume-card">
+            <h1 class="detail-title">简历需要授权查看</h1>
+            <p class="detail-summary">
+                出于个人信息保护，简历只对通过审核的访客开放。填好下面三项并提交，
+                我会尽快处理，并把访问链接或访问码发给你。
+            </p>
+
+            <!--GATE_ERROR-->
+
+            <form class="message-form" id="gate-request-form">
+                <label class="form-field">
+                    <span>你的称呼</span>
+                    <input type="text" id="gate-name" maxlength="20" placeholder="怎么称呼你" required>
+                </label>
+                <label class="form-field">
+                    <span>联系方式（邮箱或微信）</span>
+                    <input type="text" id="gate-contact" maxlength="80" placeholder="方便我把访问链接发给你" required>
+                </label>
+                <label class="form-field">
+                    <span>用途</span>
+                    <input type="text" id="gate-purpose" maxlength="200" placeholder="例如：招聘 / 合作 / 学习交流" required>
+                </label>
+                <div class="message-form__footer">
+                    <p class="message-hint">这些信息只用于本次审核，不会公开。</p>
+                    <button type="submit" class="message-submit">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>提交申请</span>
+                    </button>
+                </div>
+            </form>
+            <p class="messages-status" id="gate-status" aria-live="polite"></p>
+
+            <details class="gate-unlock">
+                <summary>已经有访问码？点这里输入</summary>
+                <form id="gate-unlock-form">
+                    <label class="form-field">
+                        <span>访问码</span>
+                        <input type="text" id="gate-code" maxlength="32" placeholder="例如 K7M2QP4X" autocomplete="off" required>
+                    </label>
+                    <button type="submit" class="message-submit">
+                        <i class="fas fa-unlock"></i>
+                        <span>打开简历</span>
+                    </button>
+                </form>
+                <p class="messages-status" id="gate-unlock-status" aria-live="polite"></p>
+            </details>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2026 Aurora's World 在星空中探索，在代码中创造。</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/subpage.js"></script>
+    <script type="module" src="js/gate.js"></script>
+</body>
+</html>
