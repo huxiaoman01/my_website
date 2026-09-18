@@ -56,7 +56,7 @@
     "detail": {
       "role": "数据挖掘与分析成员",
       "period": "2025.07 - 至今",
-      "stack": ["Python", "Pandas", "NumPy", "MySQL", "Git"],
+      "stack": ["Python", "Pandas", "MySQL", "Git"],
       "metrics": [
         { "label": "用户行为数据", "value": "1 万+" },
         { "label": "数据可用率", "value": "95%" },

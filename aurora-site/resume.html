@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>简历 | Aurora's World</title>
+    <script>
+        // 先于首帧应用主题，避免从首页跳转过来时闪一下深色
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                }
+            } catch (err) {
+                /* 隐私模式下访问 localStorage 会抛错，忽略即可 */
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
@@ -28,7 +40,7 @@
             <header class="resume-head">
                 <div class="resume-identity">
                     <h1>胡筱漫</h1>
-                    <p class="resume-target">求职意向：数据方向实习生（数据分析 / 数据挖掘 / 数据开发 / 研发测试）</p>
+                    <p class="resume-target">求职意向：数据产品实习生 · 小米</p>
                     <ul class="resume-contact">
                         <li><i class="fas fa-envelope"></i> 2151235296@qq.com</li>
                         <li><i class="fab fa-weixin"></i> 微信：扫码添加（见右侧二维码）</li>
@@ -43,8 +55,8 @@
             <section class="resume-section">
                 <h2>核心优势</h2>
                 <ul>
-                    <li><strong>数据分析与工程能力：</strong>具备数据抓取、清洗、分析的基础项目经验，能完成简单建模工作，熟练使用 Python 数据分析栈与 Office 办公软件（Word / Excel / PPT），能高效完成数据处理与成果汇报。</li>
-                    <li><strong>全流程项目与协作能力：</strong>在校企合作与创业项目中参与开发、测试、项目管理全流程，工作态度认真负责，具备良好的跨职能协作能力。</li>
+                    <li><strong>数据分析与工程能力：</strong>具备数据爬取、清洗、分析的基础项目经验，熟练使用 Python 数据分析栈及 Office 办公软件（Word / Excel / PPT），能高效完成数据处理与成果汇报。</li>
+                    <li><strong>全流程项目与协作能力：</strong>在校企合作与创业项目中，参与开发、测试、项目管理全流程，工作态度认真负责，具备良好的跨职能协作能力。</li>
                     <li><strong>快速学习与解决问题能力：</strong>接受新事物能力强，能在竞赛与项目中快速学习数据分析相关技术，通过基础数据处理与建模，为项目推进和获奖提供数据支持。</li>
                 </ul>
             </section>
@@ -57,8 +69,8 @@
                         <span>信息管理与信息系统 · 本科</span>
                         <span>2024.09 - 至今</span>
                     </div>
-                    <p><strong>主修课程：</strong>Java 程序设计、Python 程序设计、JSP 程序设计、数据库原理与应用、面向对象程序设计、计算机网络、数据结构、物流管理信息系统、数据分析、数据库管理系统、管理学、管理统计学、管理经济学</p>
-                    <p><strong>证书：</strong>大学英语四级（CET-4）、普通话水平二级甲等</p>
+                    <p><strong>主修课程：</strong>Python 程序设计、SPSS 商务数据分析、数据库原理与应用、数据结构、物流管理信息系统、数据库管理系统、管理学、管理统计学、管理经济学</p>
+                    <p><strong>证书：</strong>大学英语四级（CET-4）、计算机二级证书、普通话水平二级甲等</p>
                     <p><strong>荣誉奖项：</strong></p>
                     <ul>
                         <li>校二等奖学金</li>
@@ -90,6 +102,22 @@
             </section>
 
             <section class="resume-section">
+                <h2>实习经历</h2>
+                <div class="resume-item">
+                    <div class="resume-item__head">
+                        <strong>武汉市春智良行文化科技有限公司</strong>
+                        <span>数据分析实习岗</span>
+                        <span>2026.06 - 2026.08</span>
+                    </div>
+                    <ul>
+                        <li>负责论文配套的数据处理工作，使用 SPSS 完成数据集整理、变量筛选、信效度检验、描述性与统计分析。</li>
+                        <li>开展数据核查，识别异常值，完成数据清洗，保障数据集质量与分析结果可靠性。</li>
+                        <li>整理统计输出结果，梳理分析结论，输出标准化分析表格，为论文撰写提供数据支撑。</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="resume-section">
                 <h2>项目实践经历</h2>
 
                 <div class="resume-item">
@@ -98,11 +126,10 @@
                         <span>数据分析与测试员</span>
                         <span>2024.12 - 2025.07</span>
                     </div>
-                    <p><strong>技术栈：</strong>Python、NumPy、MySQL、Java</p>
-                    <p><strong>项目描述：</strong>面向校园场景的心理健康管理平台，融合问卷数据分析与 AI 智能交互，实现学生与 AI 的实时聊天互动，能依据聊天文本实时识别情绪状态，结合问卷数据结果共同构建用户心理画像，为风险预警提供智能化支撑。</p>
+                    <p><strong>项目描述：</strong>面向校园场景的心理健康管理平台，融合了问卷数据分析与 AI 智能交互能力，实现学生与 AI 的实时聊天互动，能依据聊天文本实时识别情绪状态，结合问卷数据结果共同构建用户心理画像，为风险预警提供智能化支撑。</p>
                     <p><strong>核心贡献：</strong></p>
                     <ul>
-                        <li>数据分析与建模：使用 Python 对超过 2000 份问卷数据进行清洗、特征工程，并运用相关性分析识别出影响心理状态的关键因子，辅助完善 AI 心理识别的判断逻辑。</li>
+                        <li>数据分析与建模：使用 Python 对超过 2000 份匿名问卷数据进行清洗、特征工程，并运用相关性分析，识别出影响心理状态的关键因子，辅助完善 AI 心理识别的判断逻辑。</li>
                         <li>系统测试与质量保障：负责系统测试、执行用例，累计提交并跟踪修复 20+ 个 Bug；协助参与性能测试，推动核心接口响应速度优化与系统整体可用性提升。</li>
                     </ul>
                 </div>
@@ -113,12 +140,9 @@
                         <span>数据挖掘</span>
                         <span>2025.07 - 2026.01</span>
                     </div>
-                    <p><strong>技术栈：</strong>Python、spaCy、Pandas</p>
-                    <p><strong>核心贡献：</strong></p>
                     <ul>
-                        <li>运用 Python 相关工具抓取知网、专利库等多源文本数据，清洗并存储 5000+ 条有效论文与专利数据，提升数据有效性，形成项目可用的标准化数据集。</li>
-                        <li>基于 Python + spaCy 完成文本预处理，实现关键词与核心内容提取；结合常用数据分析方法提取 80+ 个高频创新特征词，并按交叉性、新颖性等 4 大维度完成特征分类。</li>
-                        <li>运用 Pandas 进行历时分析，通过数据分析工具完成简单的特征关联可视化，辅助项目分析结论输出。</li>
+                        <li>运用 Python 相关工具爬取知网、专利库等多源文本数据，清洗并存储 5000+ 条有效论文与专利数据，提升数据有效性，形成项目可用的标准化数据集。</li>
+                        <li>趋势挖掘与特征分类：提取专利核心技术关键词，从创新性、交叉性等维度完成 80+ 项创新特征分类。</li>
                     </ul>
                 </div>
 
@@ -128,13 +152,12 @@
                         <span>数据挖掘与分析成员</span>
                         <span>2025.07 - 至今</span>
                     </div>
-                    <p><strong>技术栈：</strong>Python、Pandas、NumPy、MySQL、Git</p>
                     <p><strong>项目描述：</strong>一个旨在通过 AI 技术提升大型社群活跃度与管理效率的创业项目。</p>
                     <p><strong>核心贡献：</strong></p>
                     <ul>
-                        <li>数据准备：从社群 API 及日志中爬取并清洗 1 万+ 用户行为数据，通过定制规则将数据可用率提升至 95%，为后续分析奠定基础。</li>
-                        <li>数据分析与建模：使用 Pandas 进行深度数据预处理与特征工程，参与搭建用户活跃度基础分析模型，为运营策略迭代提供数据参考。</li>
-                        <li>数据支撑与测试：协助设计数据库表结构、编写基础 SQL 查询语句以支撑前端数据看板；兼任测试员，保障数据接口与功能模块质量。</li>
+                        <li>用户数据体系搭建：从社群 API 及日志中提取清洗 1 万+ 用户行为数据，制定数据质量规则，将数据可用率提升至 95%，搭建完整的运营分析基础数据集。</li>
+                        <li>活跃分析与策略优化：基于 Pandas 完成用户特征工程，参与搭建用户活跃度分析模型，识别用户留存关键影响因素，输出 3 项运营优化建议，助力平台用户活跃度提升。</li>
+                        <li>数据支撑与测试：协助设计数据库表结构，编写基础 SQL 查询语句，支撑前端数据看板；兼任测试员，保障数据接口与功能模块质量。</li>
                     </ul>
                 </div>
             </section>
@@ -142,8 +165,8 @@
             <section class="resume-section">
                 <h2>技术技能</h2>
                 <ul>
-                    <li><strong>编程语言：</strong>Python（熟练）、Java（掌握）、SQL（熟练）</li>
-                    <li><strong>数据分析与处理：</strong>掌握 Pandas、NumPy 进行数据清洗与分析；具备基础的数据建模与机器学习应用经验</li>
+                    <li><strong>编程语言：</strong>Python（熟练）、SQL（掌握）</li>
+                    <li><strong>数据分析与处理：</strong>掌握 Pandas 进行数据清洗、分析；掌握 SPSS 基础统计分析</li>
                     <li><strong>开发工具：</strong>熟悉 Git 进行版本控制，了解 Linux 基本命令</li>
                     <li><strong>办公软件：</strong>熟练使用 Office 办公软件（Word / Excel / PPT）</li>
                     <li><strong>综合素质：</strong>扎实的数据结构与算法基础，良好的沟通与团队协作能力</li>
