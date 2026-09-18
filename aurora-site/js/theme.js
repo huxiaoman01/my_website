@@ -29,6 +29,8 @@ export class ThemeManager {
         const isLight = theme === 'light';
 
         this.current = isLight ? 'light' : 'dark';
+        // 同时标记 <html> 与 <body>：<html> 上的类由首帧前的内联脚本设置，负责避免闪烁
+        document.documentElement.classList.toggle('light-theme', isLight);
         document.body.classList.toggle('light-theme', isLight);
 
         if (this.moonIcon) {
