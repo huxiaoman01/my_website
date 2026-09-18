@@ -35,9 +35,10 @@ Windows 下用 `api\.venv\Scripts\python.exe` 调用；`pytest` 需要写系统�
 
 ## 前端
 
-- 模块职责固定：`main.js`（首页装配）/ `subpage.js`（子页面装配）只做装配；`api.js` 负责请求与错误解析；`stars.js`（星空与流星）/ `bubbles.js`（亮色泡泡）/ `cursor.js`（光标粒子）/ `theme.js` / `projects.js`（首页卡片）/ `project-detail.js`（详情页渲染）/ `guestbook.js` / `ui.js` 各管一块。模块之间只通过 `export` 通信，禁止跨模块查询对方 DOM。
+- 模块职责固定：`main.js`（首页装配）/ `subpage.js`（子页面装配）只做装配；`api.js` 负责请求与错误解析；`stars.js`（星空与流星）/ `bubbles.js`（亮色泡泡）/ `cursor.js`（光标粒子）/ `reveal.js`（滚动进场与阅读进度条）/ `theme.js` / `projects.js`（首页卡片）/ `project-detail.js`（详情页渲染）/ `guestbook.js` / `ui.js` 各管一块。模块之间只通过 `export` 通信，禁止跨模块查询对方 DOM。
 - 页面结构：`index.html`（首页）、`project.html`（详情页，读取 `?id=`）、`resume.html`（在线简历，可打印且不放手机号）。子页面不加载光标粒子、流星雨与留言板。
 - 特效分主题：暗色是星空 + 流星雨 + 跟随光标的星尘，亮色是淡蓝天空 + 泡泡 + 跟随光标的花瓣。新增动效要走 `#fx-layer` 或 `#stars-container`，并保持 `pointer-events: none` 与 `prefers-reduced-motion` 降级。
+- 滚动进场动画由 `reveal.js` 统一接管：动效目标按选择器收集（不要写进 HTML），只在 `<html>` 带 `reveal-ready` 时隐藏元素，因此无 JS 或减少动效时内容始终可见；新增可滚动区块时把选择器加进 `reveal.js` 的 `TARGET_SELECTOR` 即可。
 - 样式只写在 `aurora-site/css/style.css`，沿用现有 CSS 变量与 `--transition-time`；新增配色必须同时适配 `:root` 与 `.light-theme`。
 - 保持无障碍与降级：加载区域用 `aria-live` / `aria-busy`；动效遵循 `prefers-reduced-motion`；后端不可用时对应区块显示可操作的提示，且不影响其余内容；外链加 `rel="noopener noreferrer"`。
 - 不引入构建工具或框架（Vite / React / Vue 等）；确有需要先与维护者确认。
