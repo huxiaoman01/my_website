@@ -11,6 +11,9 @@ const TARGET_SELECTOR = [
     '.message-card',
     '.action-btn',
     '.updates-content p',
+    // 游戏大厅
+    '.games-head',
+    '.games-tabs',
     // 简历页
     '.resume-head',
     '.resume-section h2',

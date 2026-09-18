@@ -30,6 +30,29 @@ def test_frontend_assets_are_served(client):
     assert client.get("/assets/images/favicon.svg").status_code == 200
 
 
+def test_games_page_is_served(client):
+    """游戏大厅是纯静态子页面，不依赖后端接口。"""
+    response = client.get("/games.html")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "小游戏" in response.text
+    assert "俄罗斯方块" in response.text
+
+
+def test_game_modules_are_served(client):
+    for path in [
+        "/js/games.js",
+        "/js/games/storage.js",
+        "/js/games/tetris.js",
+        "/js/games/minesweeper.js",
+        "/js/games/game2048.js",
+    ]:
+        response = client.get(path)
+        assert response.status_code == 200, path
+        assert response.headers["cache-control"] == "no-cache", path
+
+
 def test_static_assets_are_revalidated(client):
     """本地开发时静态文件必须回源校验，避免改动后浏览器仍用旧缓存。"""
     assert client.get("/js/main.js").headers["cache-control"] == "no-cache"

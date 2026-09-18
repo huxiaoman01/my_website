@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小游戏 | Aurora's World</title>
+    <script>
+        // 先于首帧应用主题，避免从首页跳转过来时闪一下深色
+        (function () {
+            try {
+                if (localStorage.getItem('theme') === 'light') {
+                    document.documentElement.classList.add('light-theme');
+                }
+            } catch (err) {
+                /* 隐私模式下访问 localStorage 会抛错，忽略即可 */
+            }
+
+            // 支持 IntersectionObserver 且未开启「减少动效」时才启用进场动画；否则内容始终可见
+            if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.documentElement.classList.add('reveal-ready');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+</head>
+<body class="subpage games-page">
+    <div id="theme-toggle" class="theme-toggle" title="切换主题">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun" style="display: none;"></i>
+    </div>
+    <div id="stars-container"></div>
+
+    <header class="subpage-header">
+        <a class="back-link" href="index.html">
+            <i class="fas fa-arrow-left"></i>
+            <span>返回首页</span>
+        </a>
+    </header>
+
+    <main class="subpage-container games-container">
+        <header class="games-head">
+            <h1 class="games-title">小游戏</h1>
+            <p class="games-subtitle">
+                三个不用下载的小游戏：手速、推理和合并策略各来一局。
+            </p>
+        </header>
+
+        <div class="games-tabs" role="tablist" aria-label="选择游戏">
+            <button type="button" class="games-tab is-active" id="tab-tetris" role="tab" aria-selected="true" aria-controls="panel-tetris" data-game="tetris">
+                <i class="fas fa-cubes" aria-hidden="true"></i>
+                <span>俄罗斯方块</span>
+            </button>
+            <button type="button" class="games-tab" id="tab-minesweeper" role="tab" aria-selected="false" aria-controls="panel-minesweeper" data-game="minesweeper" tabindex="-1">
+                <i class="fas fa-bomb" aria-hidden="true"></i>
+                <span>扫雷</span>
+            </button>
+            <button type="button" class="games-tab" id="tab-2048" role="tab" aria-selected="false" aria-controls="panel-2048" data-game="game2048" tabindex="-1">
+                <i class="fas fa-table-cells" aria-hidden="true"></i>
+                <span>2048</span>
+            </button>
+        </div>
+
+        <section class="game-panel is-active" id="panel-tetris" role="tabpanel" aria-labelledby="tab-tetris" data-game="tetris" tabindex="-1">
+            <details class="game-rules">
+                <summary>玩法说明</summary>
+                <ul>
+                    <li>方向键左右移动、下键加速，↑ 或 X 顺时针旋转，Z 逆时针旋转。</li>
+                    <li>空格直接落底，Shift 或 C 暂存方块，P / Esc 暂停。</li>
+                    <li>一次消掉的行数越多分数越高，每消 10 行升一级，下落会越来越快。</li>
+                </ul>
+            </details>
+            <div class="game-mount" data-game-mount="tetris"></div>
+        </section>
+
+        <section class="game-panel" id="panel-minesweeper" role="tabpanel" aria-labelledby="tab-minesweeper" data-game="minesweeper" tabindex="-1" hidden>
+            <details class="game-rules">
+                <summary>玩法说明</summary>
+                <ul>
+                    <li>左键翻开格子，右键插旗；手机上长按插旗。</li>
+                    <li>第一次点击一定安全，不会是雷，也不会紧挨着雷。</li>
+                    <li>双击已翻开的数字，可以在周围旗子数刚好时快速展开相邻格子。</li>
+                </ul>
+            </details>
+            <div class="game-mount" data-game-mount="minesweeper"></div>
+        </section>
+
+        <section class="game-panel" id="panel-2048" role="tabpanel" aria-labelledby="tab-2048" data-game="game2048" tabindex="-1" hidden>
+            <details class="game-rules">
+                <summary>玩法说明</summary>
+                <ul>
+                    <li>方向键或 WASD 移动，手机直接在棋盘上滑动。</li>
+                    <li>相同数字撞在一起会合并成两倍，目标是凑出 2048。</li>
+                    <li>走错一步可以「撤销一步」回到上一步，每局只能回退一次。</li>
+                </ul>
+            </details>
+            <div class="game-mount" data-game-mount="game2048"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>© 2026 Aurora's World 在星空中探索，在代码中创造。</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/games.js"></script>
+</body>
+</html>
