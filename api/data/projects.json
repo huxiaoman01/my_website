@@ -5,7 +5,46 @@
     "summary": "星空背景、主题切换与动效；右侧内容区接入 FastAPI，项目列表与留言板均由接口动态驱动。",
     "tags": ["HTML", "CSS", "JavaScript", "FastAPI"],
     "link": "https://github.com/huxiaoman01",
-    "year": 2026
+    "year": 2026,
+    "detail": {
+      "role": "独立开发",
+      "period": "2025 - 至今",
+      "stack": ["HTML", "CSS", "JavaScript", "FastAPI", "SQLite", "Nginx"],
+      "metrics": [
+        { "label": "接口", "value": "5 个" },
+        { "label": "前端依赖", "value": "0 个" },
+        { "label": "部署", "value": "同域反代" }
+      ],
+      "sections": [
+        {
+          "heading": "项目背景",
+          "paragraphs": [
+            "想有一个能长期更新的个人主页，同时把「前后端分离」从概念落到可部署、可测试的工程上。"
+          ]
+        },
+        {
+          "heading": "技术方案",
+          "bullets": [
+            "前端用原生 HTML / CSS / ES modules，不引入构建工具，按职责拆成独立模块",
+            "FastAPI 同时挂载静态站点与 /api：本地一条命令跑通前后端，生产由 Nginx 同域反代",
+            "项目列表与留言板全部由接口驱动，数据源分别是 JSON 与 SQLite"
+          ]
+        },
+        {
+          "heading": "工程实践",
+          "bullets": [
+            "pytest 覆盖接口契约、数据校验与静态站点挂载，GitHub Actions 自动运行",
+            "配置全部外置为 AURORA_* 环境变量，CORS 默认关闭、按需开放白名单",
+            "深浅双主题、星空与极光动效，并对 prefers-reduced-motion 做降级"
+          ]
+        },
+        {
+          "heading": "后续计划",
+          "paragraphs": ["继续补齐访问统计、全站搜索与更完整的作品集呈现方式。"]
+        }
+      ],
+      "links": [{ "label": "查看 GitHub 仓库", "href": "https://github.com/huxiaoman01" }]
+    }
   },
   {
     "id": "xingwei-community",
@@ -13,7 +52,157 @@
     "summary": "面向大型社群的 AI 运营创业项目：清洗 1 万+ 用户行为数据（可用率 95%），参与活跃度分析模型搭建并输出 3 项运营优化建议。",
     "tags": ["Python", "数据挖掘", "SQL"],
     "link": "assets/dashboards/messages-dashboard.html",
-    "year": 2025
+    "year": 2025,
+    "detail": {
+      "role": "数据挖掘与分析成员",
+      "period": "2025.07 - 至今",
+      "stack": ["Python", "Pandas", "NumPy", "MySQL", "Git"],
+      "metrics": [
+        { "label": "用户行为数据", "value": "1 万+" },
+        { "label": "数据可用率", "value": "95%" },
+        { "label": "运营优化建议", "value": "3 项" }
+      ],
+      "sections": [
+        {
+          "heading": "项目背景",
+          "paragraphs": [
+            "面向大型社群的 AI 运营创业项目，目标是用数据提升社群活跃度与管理效率，我在其中负责数据挖掘与分析。"
+          ]
+        },
+        {
+          "heading": "数据准备",
+          "bullets": [
+            "从社群 API 与日志中提取用户行为数据，完成清洗与结构化",
+            "制定数据质量规则，把数据可用率提升到 95%，为后续分析打好底子"
+          ]
+        },
+        {
+          "heading": "分析与建模",
+          "bullets": [
+            "基于 Pandas 完成深度预处理与特征工程",
+            "参与搭建用户活跃度基础分析模型，识别影响用户留存的关键因素",
+            "结合分析结论输出 3 项运营优化建议"
+          ]
+        },
+        {
+          "heading": "数据支撑与测试",
+          "bullets": [
+            "协助设计数据库表结构、编写基础 SQL 查询，支撑前端数据看板",
+            "兼任测试，保障数据接口与功能模块质量"
+          ]
+        },
+        {
+          "heading": "收获",
+          "paragraphs": [
+            "第一次把数据分析用在真实的运营场景里，也第一次体会到「数据可用率」比「数据量」更影响结论。"
+          ]
+        }
+      ],
+      "links": [
+        { "label": "查看成果看板", "href": "assets/dashboards/messages-dashboard.html" }
+      ]
+    }
+  },
+  {
+    "id": "lingxin-ai",
+    "title": "灵心 AI · 心理健康管理系统",
+    "summary": "校企合作项目：清洗 2000+ 份问卷数据并完成特征工程与相关性分析，同时负责系统测试、跟踪修复 20+ 个缺陷。",
+    "tags": ["Python", "数据分析", "软件测试"],
+    "link": "",
+    "year": 2024,
+    "detail": {
+      "role": "数据分析与测试员",
+      "period": "2024.12 - 2025.07",
+      "stack": ["Python", "NumPy", "MySQL", "Java"],
+      "metrics": [
+        { "label": "问卷数据", "value": "2000+ 份" },
+        { "label": "修复缺陷", "value": "20+ 个" },
+        { "label": "分析维度", "value": "4 类" }
+      ],
+      "sections": [
+        {
+          "heading": "项目背景",
+          "paragraphs": [
+            "面向校园场景的心理健康管理平台，融合问卷数据分析与 AI 智能交互，需要从问卷数据中找出影响心理状态的关键因素，为风险预警提供支撑。"
+          ]
+        },
+        {
+          "heading": "数据分析与建模",
+          "bullets": [
+            "使用 Python 清洗超过 2000 份问卷数据，完成特征工程",
+            "通过相关性分析识别影响心理状态的关键因子，辅助完善 AI 识别的判断逻辑"
+          ]
+        },
+        {
+          "heading": "测试与质量保障",
+          "bullets": [
+            "负责系统测试，编写并执行用例，累计提交并跟踪修复 20+ 个缺陷",
+            "协助开展性能测试，推动核心接口响应速度与整体可用性提升"
+          ]
+        },
+        {
+          "heading": "收获",
+          "paragraphs": [
+            "同时在数据和测试两个角色上工作，学会了用数据结论去支撑产品判断，也理解了缺陷闭环对交付质量的意义。"
+          ]
+        }
+      ],
+      "links": []
+    }
+  },
+  {
+    "id": "ev-patent-mining",
+    "title": "双碳背景下电动汽车专利技术挖掘",
+    "summary": "校企合作项目：抓取清洗 5000+ 条论文与专利文本，基于 spaCy 完成预处理并提取 80+ 个高频创新特征词，按 4 个维度分类。",
+    "tags": ["Python", "spaCy", "文本挖掘"],
+    "link": "",
+    "year": 2025,
+    "detail": {
+      "role": "数据挖掘",
+      "period": "2025.07 - 2026.01",
+      "stack": ["Python", "spaCy", "Pandas"],
+      "metrics": [
+        { "label": "论文与专利", "value": "5000+ 条" },
+        { "label": "创新特征词", "value": "80+ 个" },
+        { "label": "分析维度", "value": "4 个" }
+      ],
+      "sections": [
+        {
+          "heading": "项目背景",
+          "paragraphs": [
+            "校企合作的专利技术挖掘项目，需要从多源文本中找出双碳背景下电动汽车领域的技术热点与创新方向。"
+          ]
+        },
+        {
+          "heading": "多源数据抓取",
+          "bullets": [
+            "使用 Python 相关工具从知网、专利库等来源抓取 5000+ 条论文与专利文本",
+            "完成数据清洗与存储，形成项目可用的标准化数据集"
+          ]
+        },
+        {
+          "heading": "文本预处理与特征提取",
+          "bullets": [
+            "基于 Python + spaCy 完成文本预处理，提取关键词与核心内容",
+            "结合常用数据分析方法提炼 80+ 个高频创新特征词，并按交叉性、新颖性等 4 个维度完成特征分类"
+          ]
+        },
+        {
+          "heading": "分析与可视化",
+          "bullets": [
+            "使用 Pandas 进行历时分析",
+            "借助数据分析工具完成简单的特征关联可视化，辅助项目结论输出"
+          ]
+        },
+        {
+          "heading": "收获",
+          "paragraphs": [
+            "第一次独立完成从抓取、清洗、预处理到特征提取的完整文本挖掘链路，也熟悉了非结构化数据的处理节奏。"
+          ]
+        }
+      ],
+      "links": []
+    }
   },
   {
     "id": "aurora-api",
@@ -21,6 +210,46 @@
     "summary": "提供健康检查、项目列表与留言读写接口；配置全部外置为环境变量，配有 pytest 用例与 GitHub Actions 持续集成。",
     "tags": ["FastAPI", "SQLite", "pytest", "REST"],
     "link": "https://github.com/huxiaoman01",
-    "year": 2026
+    "year": 2026,
+    "detail": {
+      "role": "独立开发",
+      "period": "2026 - 至今",
+      "stack": ["FastAPI", "SQLite", "pytest", "Uvicorn"],
+      "metrics": [
+        { "label": "接口", "value": "5 个" },
+        { "label": "运行依赖", "value": "2 个" },
+        { "label": "测试", "value": "pytest + CI" }
+      ],
+      "sections": [
+        {
+          "heading": "项目背景",
+          "paragraphs": [
+            "个人站点的后端部分，负责提供项目列表与留言板接口，并承担同源静态托管，让本地开发与线上部署共用一套代码。"
+          ]
+        },
+        {
+          "heading": "技术方案",
+          "bullets": [
+            "FastAPI + SQLite，路由按 projects / messages 拆分",
+            "应用由 create_app() 工厂装配，便于测试时注入不同配置"
+          ]
+        },
+        {
+          "heading": "工程实践",
+          "bullets": [
+            "数据用 Pydantic 校验：非法数据返回带 errors 的 500，留言长度与空值在写入前校验",
+            "配置全部走环境变量：数据文件、数据库、静态目录、CORS 白名单、留言条数上限",
+            "pytest 覆盖接口契约与错误语义，GitHub Actions 在每次 push 时自动运行"
+          ]
+        },
+        {
+          "heading": "部署方式",
+          "paragraphs": [
+            "systemd 常驻后端进程，Nginx 托管前端静态文件并把 /api 反代到本机 8000 端口，整站同源、无需 CORS。"
+          ]
+        }
+      ],
+      "links": [{ "label": "查看 GitHub 仓库", "href": "https://github.com/huxiaoman01" }]
+    }
   }
 ]

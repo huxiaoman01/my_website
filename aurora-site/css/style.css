@@ -1218,3 +1218,375 @@ body::after {
         white-space: normal;
     }
 }
+
+/* ===== 子页面（项目详情 / 在线简历） ===== */
+.subpage-header {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    transition: transform 0.25s ease, background var(--transition-time),
+        border-color var(--transition-time);
+}
+
+.back-link:hover {
+    transform: translateX(-2px);
+    background: var(--card-hover-bg);
+    border-color: var(--border-accent);
+}
+
+.subpage-container {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 96px 20px 30px;
+}
+
+.detail-card,
+.resume-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 34px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    transition: border-color var(--transition-time), background var(--transition-time);
+}
+
+.detail-title {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.9rem;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.detail-meta {
+    color: var(--accent-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+}
+
+.detail-summary {
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 16px;
+}
+
+.detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.detail-stack {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 18px 0 0;
+}
+
+.detail-hint {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.detail-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: var(--card-hover-bg);
+    border: 1px solid var(--border-color);
+    transition: transform 0.25s ease, border-color var(--transition-time);
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-accent);
+}
+
+.metric-card__value {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.5rem;
+    color: var(--accent-primary);
+}
+
+.metric-card__label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.detail-section {
+    margin-top: 26px;
+}
+
+.detail-section__title,
+.resume-section h2 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.15rem;
+    color: var(--accent-secondary);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-accent);
+}
+
+.detail-section p {
+    color: var(--text-primary);
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+.detail-section ul,
+.resume-section ul {
+    margin: 6px 0 10px 1.2em;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.detail-section li,
+.resume-section li {
+    margin-bottom: 6px;
+}
+
+.detail-actions,
+.resume-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 12px;
+    background: var(--gradient-primary);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.92rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.detail-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px var(--shadow-color);
+}
+
+.detail-action--ghost {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.detail-action--ghost:hover {
+    border-color: var(--border-accent);
+}
+
+/* 项目卡片底部操作区 */
+.project-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 6px;
+}
+
+.project-card__link--muted {
+    color: var(--text-secondary);
+}
+
+/* ===== 在线简历 ===== */
+.resume-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 22px;
+    margin-bottom: 26px;
+}
+
+.resume-identity h1 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.resume-target {
+    color: var(--accent-secondary);
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.resume-contact {
+    list-style: none;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+.resume-contact li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.resume-qr {
+    text-align: center;
+}
+
+.resume-qr img {
+    width: 108px;
+    height: 108px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.resume-qr figcaption {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    margin-top: 6px;
+}
+
+.resume-section {
+    margin-top: 26px;
+}
+
+.resume-section p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 8px;
+}
+
+.resume-item {
+    margin-bottom: 18px;
+}
+
+.resume-item__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.resume-item__head strong {
+    color: var(--text-primary);
+}
+
+.resume-item__head span {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+}
+
+@media (max-width: 767px) {
+    .subpage-container {
+        padding: 84px 12px 24px;
+    }
+
+    .detail-card,
+    .resume-card {
+        padding: 20px;
+    }
+
+    .detail-title {
+        font-size: 1.5rem;
+    }
+
+    .subpage-header {
+        top: 15px;
+        left: 12px;
+    }
+}
+
+/* 打印简历：A4 白底、隐藏动效与导航 */
+@page {
+    margin: 14mm;
+}
+
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #111111;
+    }
+
+    #stars-container,
+    #fx-layer,
+    body::before,
+    body::after,
+    .theme-toggle,
+    .subpage-header,
+    .footer,
+    .resume-actions {
+        display: none !important;
+    }
+
+    .subpage-container {
+        max-width: none;
+        padding: 0;
+    }
+
+    .resume-card {
+        background: #ffffff;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        padding: 0;
+    }
+
+    .resume-section,
+    .resume-item {
+        break-inside: avoid;
+    }
+
+    .resume-identity h1,
+    .resume-target,
+    .resume-section h2 {
+        color: #1a3a8f;
+    }
+
+    .resume-section h2 {
+        border-bottom: 1.5px solid #1a3a8f;
+    }
+
+    .resume-section p,
+    .resume-section li,
+    .resume-contact,
+    .resume-item__head span,
+    .resume-qr figcaption {
+        color: #222222;
+    }
+
+    .resume-item__head strong {
+        color: #000000;
+    }
+}

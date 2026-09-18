@@ -6,11 +6,11 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import TypeAdapter, ValidationError
 
-from ..schemas import Project
+from ..schemas import Project, ProjectWithDetail
 
 router = APIRouter(prefix="/api", tags=["projects"])
 
-_project_list_adapter = TypeAdapter(list[Project])
+_project_list_adapter = TypeAdapter(list[ProjectWithDetail])
 
 
 def _serializable_errors(exc: ValidationError) -> list[dict]:
@@ -24,7 +24,7 @@ def _serializable_errors(exc: ValidationError) -> list[dict]:
     return errors
 
 
-def load_projects(projects_file: Path) -> list[Project]:
+def load_projects(projects_file: Path) -> list[ProjectWithDetail]:
     """读取并校验项目列表：文件缺失返回空数组，数据非法返回 500 及错误详情。"""
     if not projects_file.is_file():
         return []
@@ -63,12 +63,13 @@ def load_projects(projects_file: Path) -> list[Project]:
 
 
 @router.get("/projects", response_model=list[Project], summary="项目列表")
-def list_projects(request: Request) -> list[Project]:
+def list_projects(request: Request) -> list[ProjectWithDetail]:
+    """列表只返回卡片需要的字段，detail 由响应模型自动裁剪掉。"""
     return load_projects(request.app.state.settings.projects_file)
 
 
-@router.get("/projects/{project_id}", response_model=Project, summary="按 id 查询单个项目")
-def get_project(project_id: str, request: Request) -> Project:
+@router.get("/projects/{project_id}", response_model=ProjectWithDetail, summary="按 id 查询单个项目")
+def get_project(project_id: str, request: Request) -> ProjectWithDetail:
     for project in load_projects(request.app.state.settings.projects_file):
         if project.id == project_id:
             return project
