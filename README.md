@@ -67,7 +67,7 @@
 
 ### 内容与作品集整合
 
-`projects.json` 将个人站本身、数据看板、数据库课设、大创材料、文本分析、FastAPI 接口等条目统一展示——改 JSON 即可更新主页，无需改 HTML，体现**数据驱动页面**的基本思路。
+`projects.json` 统一承载 5 个项目（个人网站、星纬伙伴、灵心 AI、电动汽车专利挖掘、配套 API）的卡片与详情内容——改 JSON 即可同时更新主页与详情页，无需改 HTML，体现**数据驱动页面**的基本思路。项目详情页由 `project.html?id=` 渲染，简历页 `resume.html` 提供可打印的网页版（不含手机号，PDF 版本照常下载）。
 
 ---
 
@@ -76,7 +76,9 @@
 ```
 my_website/
 ├── aurora-site/              # 前端（纯静态，ES modules）
-│   ├── index.html            # 页面结构，含 #projects 项目展示区与 #guestbook 留言板
+│   ├── index.html            # 首页：项目展示区、留言板与动效入口
+│   ├── project.html          # 项目详情页（读取 ?id= 渲染）
+│   ├── resume.html           # 在线简历页（可打印）
 │   ├── css/style.css         # 主题变量、动效、响应式、项目卡片与骨架屏样式
 │   ├── js/
 │   │   ├── main.js           # 入口：装配各模块
@@ -87,6 +89,8 @@ my_website/
 │   │   ├── guestbook.js      # 留言加载、提交与状态提示
 │   │   ├── bubbles.js       # 亮色主题的泡泡特效
 │   │   ├── cursor.js        # 跟随光标的光尘 / 花瓣粒子
+│   │   ├── subpage.js        # 子页面入口（主题 + 星空）
+│   │   ├── project-detail.js # 项目详情渲染
 │   │   └── ui.js             # 打字机、弹层、小惊喜按钮与滚动交互
 │   └── assets/               # 头像、微信二维码、简历 PDF、favicon、成果看板
 ├── api/                      # 后端（FastAPI）
@@ -260,7 +264,7 @@ CI：`.github/workflows/ci.yml` 在 push 与 PR 时自动安装依赖并运行 `
 |------|------|------|
 | `GET` | `/api/health` | 返回服务是否正常 |
 | `GET` | `/api/projects` | 返回 `data/projects.json` 中的项目数组 |
-| `GET` | `/api/projects/{project_id}` | 按 `id` 返回单条；不存在则 `404` |
+| `GET` | `/api/projects/{project_id}` | 按 `id` 返回单条，含 `detail` 详情内容；不存在则 `404` |
 | `GET` | `/api/messages` | 返回最近留言，按时间倒序，条数受 `AURORA_MESSAGES_LIMIT` 限制 |
 | `POST` | `/api/messages` | 新增留言；请求体为 `name` 与 `content` |
 
@@ -278,6 +282,18 @@ CI：`.github/workflows/ci.yml` 在 push 与 PR 时自动安装依赖并运行 `
 | `tags` | 字符串数组 | 必填；每项为非空字符串 | 标签列表，可为 `[]` |
 | `link` | 字符串 | 可选；默认 `""`；非空时必须是 `http://` / `https://` 外链，或指向 `assets/` 的站内路径（不允许 `..`、反斜杠与其它协议前缀） | 外链显示「查看链接」，站内成果页显示「查看成果」 |
 | `year` | 整数 | 可选；2000～2100 | 显示在卡片元信息区 |
+| `detail` | 对象 | 可选；项目详情页内容，缺失时详情页降级为简介 | 仅单条查询返回，字段见下表 |
+
+`detail` 对象（列表接口会自动裁剪掉）：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `role` | 字符串 | 可选；我在项目中的角色（≤60 字） |
+| `period` | 字符串 | 可选；时间区间（≤60 字） |
+| `stack` | 字符串数组 | 可选；技术栈，最多 20 项 |
+| `metrics` | 对象数组 | 可选；指标卡，最多 6 个，每项 `label` / `value` |
+| `sections` | 对象数组 | 可选；正文章节，最多 8 个，每项 `heading` / `paragraphs` / `bullets` |
+| `links` | 对象数组 | 可选；详情页按钮，最多 5 个，每项 `label` / `href`（规则同 `link`） |
 
 ---
 
