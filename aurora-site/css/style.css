@@ -1460,6 +1460,15 @@ body::after {
     margin-bottom: 6px;
 }
 
+.resume-contact a {
+    color: var(--accent-primary);
+    text-decoration: none;
+}
+
+.resume-contact a:hover {
+    text-decoration: underline;
+}
+
 .resume-qr {
     text-align: center;
 }

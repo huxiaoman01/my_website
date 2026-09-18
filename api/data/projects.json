@@ -55,7 +55,7 @@
     "year": 2025,
     "detail": {
       "role": "数据挖掘与分析成员",
-      "period": "2025.07 - 至今",
+      "period": "2025.07 - 2026.05",
       "stack": ["Python", "Pandas", "MySQL", "Git"],
       "metrics": [
         { "label": "用户行为数据", "value": "1 万+" },
