@@ -3,6 +3,7 @@
 import { setupGuestbook } from './guestbook.js';
 import { initCursorParticles } from './cursor.js';
 import { loadProjectsFromApi } from './projects.js';
+import { initScrollEffects } from './reveal.js';
 import { initStars } from './stars.js';
 import { ThemeManager } from './theme.js';
 import {
@@ -20,6 +21,7 @@ function bootstrap() {
 
     initStars();
     initCursorParticles();
+    initScrollEffects();
     typeWriterEffect();
     setupWechatModal();
     setupMeteorButton();

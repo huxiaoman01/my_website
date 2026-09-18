@@ -1552,6 +1552,7 @@ body::after {
     #fx-layer,
     body::before,
     body::after,
+    #scroll-progress,
     .theme-toggle,
     .subpage-header,
     .footer,
@@ -1597,5 +1598,53 @@ body::after {
 
     .resume-item__head strong {
         color: #000000;
+    }
+}
+
+/* ===== 滚动进场动画与顶部阅读进度条 ===== */
+.reveal-ready .reveal-target {
+    transition: opacity 550ms ease-out var(--reveal-delay, 0ms),
+        transform 550ms ease-out var(--reveal-delay, 0ms);
+}
+
+/* 只用 :not(.is-visible) 定义初始态：动画结束后元素回到自身样式，不影响卡片 hover 等既有动效 */
+.reveal-ready .reveal-target:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(18px);
+}
+
+#scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 1000;
+    pointer-events: none;
+    background: transparent;
+    transition: opacity var(--transition-time);
+}
+
+#scroll-progress.is-idle {
+    opacity: 0;
+}
+
+#scroll-progress > span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 0 999px 999px 0;
+    background: var(--gradient-primary);
+    box-shadow: 0 0 8px var(--accent-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal-ready .reveal-target {
+        transition: none;
+    }
+
+    .reveal-ready .reveal-target:not(.is-visible) {
+        opacity: 1;
+        transform: none;
     }
 }

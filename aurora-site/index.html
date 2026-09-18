@@ -14,6 +14,11 @@
             } catch (err) {
                 /* 隐私模式下访问 localStorage 会抛错，忽略即可 */
             }
+
+            // 支持 IntersectionObserver 且未开启「减少动效」时才启用进场动画；否则内容始终可见
+            if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.documentElement.classList.add('reveal-ready');
+            }
         })();
     </script>
     <link rel="stylesheet" href="css/style.css">
