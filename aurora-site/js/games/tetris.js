@@ -63,7 +63,6 @@ const TEMPLATE = `
         <div class="game-stat"><span class="game-stat__label">分数</span><strong data-role="score">0</strong></div>
         <div class="game-stat"><span class="game-stat__label">最高分</span><strong data-role="best">0</strong></div>
         <div class="game-stat"><span class="game-stat__label">等级</span><strong data-role="level">1</strong></div>
-        <div class="game-stat"><span class="game-stat__label">消行</span><strong data-role="lines">0</strong></div>
     </div>
     <div class="tetris-layout">
         <div class="tetris-stage">
@@ -115,7 +114,6 @@ export function mountTetrisGame(root) {
     const scoreEl = root.querySelector('[data-role="score"]');
     const bestEl = root.querySelector('[data-role="best"]');
     const levelEl = root.querySelector('[data-role="level"]');
-    const linesEl = root.querySelector('[data-role="lines"]');
     const pauseButton = root.querySelector('[data-action="pause"]');
 
     const nextCanvases = Array.from({ length: NEXT_COUNT }, () => {
@@ -383,7 +381,6 @@ export function mountTetrisGame(root) {
     function updateStats() {
         scoreEl.textContent = String(score);
         levelEl.textContent = String(level);
-        linesEl.textContent = String(lines);
     }
 
     function showOverlay(title, text, actionLabel, onAction) {

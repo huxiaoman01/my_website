@@ -1823,7 +1823,10 @@ body::after {
 }
 
 .game-toolbar .game-hud {
-    flex: 1 1 240px;
+    /* 用 min-width 而不是 flex-basis：手机上工具栏变成纵向排列时，
+       flex-basis 会变成高度基准，把统计卡片撑成一条长框 */
+    flex: 1 1 auto;
+    min-width: 200px;
 }
 
 .game-select {
@@ -2057,6 +2060,11 @@ body::after {
     background: rgba(255, 159, 110, 0.22);
 }
 
+.mine-cell.is-pending {
+    background: var(--button-hover);
+    box-shadow: inset 0 0 0 2px var(--accent-primary);
+}
+
 .mine-cell.is-mine {
     background: rgba(255, 107, 107, 0.28);
 }
@@ -2104,6 +2112,8 @@ body::after {
     border-radius: 18px;
     border: 1px solid var(--border-color);
     background: var(--game-surface);
+    /* 手机上滑动棋盘即出牌，不能让浏览器同时滚动页面 */
+    touch-action: none;
 }
 
 .game2048-tile {
@@ -2169,22 +2179,74 @@ body::after {
     .game-toolbar {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
     }
 
-    .game-toolbar .game-hud {
-        flex: 1 1 auto;
+    /* 手机上统计卡片压扁成一行，把纵向空间留给棋盘和按键 */
+    .game-stat {
+        gap: 2px;
+        padding: 7px 10px;
+    }
+
+    .game-stat__label {
+        font-size: 0.68rem;
+    }
+
+    .game-stat strong {
+        font-size: 1.05rem;
+    }
+
+    .game-btn {
+        padding: 8px 10px;
+        font-size: 0.82rem;
     }
 
     .tetris-layout {
+        flex-direction: column;
+        align-items: center;
         gap: 12px;
     }
 
+    /* 棋盘按视口高度定尺寸（宽度由 1:2 的 aspect-ratio 反推），
+       保证棋盘和下方按键能同时出现在一屏里 */
     .tetris-stage {
-        width: min(70vw, 260px);
+        width: auto;
+        height: min(52vh, 420px);
     }
 
     .tetris-side {
+        order: -1;
         flex-direction: row;
+        justify-content: center;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .tetris-panel {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+    }
+
+    .tetris-panel__title {
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+
+    .tetris-next {
+        flex-direction: row;
+        gap: 4px;
+    }
+
+    .tetris-mini {
+        width: 34px;
+        height: 28px;
+    }
+
+    .tetris-actions {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
     }
 
     .mine-board-wrap {

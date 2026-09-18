@@ -34,7 +34,7 @@ const TEMPLATE = `
     <div class="mine-board-wrap">
         <div class="mine-board" data-role="board" aria-label="扫雷棋盘"></div>
     </div>
-    <p class="game-hint">左键翻开、右键插旗；手机上长按插旗、双击数字可快速展开周围。</p>
+    <p class="game-hint">轻点两次才翻开（第一下只是选中），右键或长按插旗；双击已翻开的数字可快速展开周围。</p>
     <div class="game-overlay game-overlay--float" data-role="overlay">
         <p class="game-overlay__title" data-role="overlay-title"></p>
         <p class="game-overlay__text" data-role="overlay-text"></p>
@@ -77,6 +77,8 @@ export function mountMinesweeperGame(root) {
     let longPressTimer = 0;
     let longPressHandled = false;
     let suppressNextClick = false;
+    /** 两次点击模式的中间态：第一下只选中，再点同一格才真正翻开 */
+    let pendingIndex = -1;
     let resizeFrame = 0;
 
     function createCells() {
@@ -230,6 +232,9 @@ export function mountMinesweeperGame(root) {
             el.classList.add('is-flagged');
             el.textContent = '🚩';
             el.setAttribute('aria-label', `第 ${row} 行第 ${col} 列，已插旗`);
+        } else if (index === pendingIndex) {
+            el.classList.add('is-pending');
+            el.setAttribute('aria-label', `第 ${row} 行第 ${col} 列，已选中，再点一次翻开`);
         } else {
             el.setAttribute('aria-label', `第 ${row} 行第 ${col} 列，未翻开`);
         }
@@ -274,7 +279,17 @@ export function mountMinesweeperGame(root) {
 
         cell.flagged = !cell.flagged;
         flagged += cell.flagged ? 1 : -1;
+        if (index === pendingIndex) pendingIndex = -1;
         minesEl.textContent = String(config.mines - flagged);
+        paintCell(index);
+    }
+
+    /** 第一下只选中，避免手机上误触直接踩雷。 */
+    function selectCell(index) {
+        const previous = pendingIndex;
+        pendingIndex = index;
+
+        if (previous >= 0 && previous !== index) paintCell(previous);
         paintCell(index);
     }
 
@@ -287,6 +302,7 @@ export function mountMinesweeperGame(root) {
         const flags = around.filter((n) => cells[n].flagged).length;
         if (flags !== cell.count) return;
 
+        pendingIndex = -1;
         around.filter((n) => !cells[n].flagged && !cells[n].revealed).forEach((n) => reveal(n));
     }
 
@@ -304,6 +320,7 @@ export function mountMinesweeperGame(root) {
         const totalSafe = cells.length - config.mines;
         if (revealedCount < totalSafe) return;
 
+        pendingIndex = -1;
         finished = true;
         stopTimer();
 
@@ -317,6 +334,7 @@ export function mountMinesweeperGame(root) {
     }
 
     function lose(hitIndex) {
+        pendingIndex = -1;
         finished = true;
         stopTimer();
 
@@ -348,11 +366,21 @@ export function mountMinesweeperGame(root) {
         }
 
         const index = Number(button.dataset.index);
-        if (cells[index].revealed) {
+        const cell = cells[index];
+
+        // 已翻开的数字：点它就和弦展开
+        if (cell.revealed) {
             chord(index);
-        } else {
-            handleReveal(index);
+            return;
         }
+        // 两次点击模式：第一下只选中，第二下才翻开
+        if (index !== pendingIndex) {
+            selectCell(index);
+            return;
+        }
+
+        pendingIndex = -1;
+        handleReveal(index);
     }
 
     function handleBoardDoubleClick(event) {
