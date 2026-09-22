@@ -1,6 +1,7 @@
 /** 游戏大厅入口：只做装配，具体玩法交给 js/games/ 下的各模块。 */
 
 import { initScrollEffects } from './reveal.js';
+import { safely } from './startup.js';
 import { initStars } from './stars.js';
 import { ThemeManager } from './theme.js';
 
@@ -100,9 +101,9 @@ function handleVisibilityChange() {
 }
 
 function bootstrap() {
-    new ThemeManager();
-    initStars();
-    initScrollEffects();
+    safely('主题', () => new ThemeManager());
+    safely('星空', initStars);
+    safely('滚动效果', initScrollEffects);
 
     const tabList = document.querySelector('.games-tabs');
     if (tabList) {
@@ -111,8 +112,10 @@ function bootstrap() {
     }
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    const initial = tabs.find((tab) => tab.classList.contains('is-active')) ?? tabs[0];
-    if (initial) activate(initial.dataset.game);
+    safely('游戏列表', () => {
+        const initial = tabs.find((tab) => tab.classList.contains('is-active')) ?? tabs[0];
+        if (initial) activate(initial.dataset.game);
+    });
 }
 
 if (document.readyState === 'loading') {

@@ -52,6 +52,16 @@
 }
 
 /* 基础重置与全局样式 */
+/* 根元素也铺一层背景：个别移动端内核对 body 背景的绘制与桌面不同，这里兜底 */
+html {
+    background: var(--bg-primary);
+    color-scheme: dark;
+}
+
+.light-theme {
+    color-scheme: light;
+}
+
 * {
     margin: 0;
     padding: 0;
